@@ -115,13 +115,10 @@ class OrangeCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: borderColor ?? AppColors.orange,
-            width: 1.2,
-          ),
+          border: Border.all(color: borderColor ?? AppColors.white, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: (borderColor ?? AppColors.orange).withOpacity(0.08),
+              color: (borderColor ?? AppColors.white).withOpacity(0.08),
               blurRadius: 12,
               spreadRadius: 0,
             ),

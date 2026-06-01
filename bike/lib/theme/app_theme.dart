@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Ducati-Inspired Premium Theme
-  static const background = Color(0xFF0D0D0D); // Primary: Deep Black
-  static const surface = Color(0xFF1A1A1A); // Secondary: Dark Grey
-  static const card = Color(0xFF1A1A1A); // Cards: Dark Grey
-  static const orange = Color(0xFFE10600); // Accent: Ducati Red
-  static const orangeDim = Color(0xFFB00000); // Dimmed Red
-  static const orangeGlow = Color(0x33E10600); // Red Glow Effect
+  // Copper & Warm Premium Theme
+  static const background = Color(0xFF151515); // Primary: Dark Background
+  static const surface = Color(0xFF222222); // Secondary: Card Surface
+  static const card = Color(0xFF222222); // Cards: Warm Dark
+  static const orange = Color(0xFFB87333); // Accent: Copper
+  static const orangeDim = Color(0xFFD4A373); // Dimmed: Secondary Copper
+  static const orangeGlow = Color(0x33B87333); // Copper Glow Effect
   static const white = Color(0xFFFFFFFF); // Accent: Pure White
-  static const grey = Color(0xFF888888);
-  static const greyDark = Color(0xFF333333);
+  static const grey = Color(0xFF000000); // Subtext: Black
+  static const greyDark = Color(0xFFFFFFFF); // Borders: White
   static const danger = Color(0xFFFF3B30);
   static const success = Color(0xFF30D158);
 }
