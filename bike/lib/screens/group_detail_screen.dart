@@ -21,13 +21,21 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChanged);
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _handleTabChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   RiderGroup? _getGroup(SquadProvider squad) {
@@ -291,10 +299,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               tabs: const [
                 Tab(text: 'MEMBERS'),
                 Tab(text: 'FORMATION'),
+                Tab(text: 'CHAT'),
               ],
             ),
           ),
-          floatingActionButton: isLeader
+          floatingActionButton: isLeader && _tabController.index == 0
               ? FloatingActionButton(
                   onPressed: () => _showAddMemberDialog(context),
                   backgroundColor: AppColors.orange,
@@ -314,6 +323,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                 onRemove: (rider) => squad.removeMember(group.id, rider.id),
               ),
               _FormationTab(group: group),
+              _ChatTab(group: group),
             ],
           ),
         );
@@ -662,5 +672,221 @@ class _FormationTab extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// Chat Tab
+
+class _ChatTab extends StatefulWidget {
+  final RiderGroup group;
+
+  const _ChatTab({required this.group});
+
+  @override
+  State<_ChatTab> createState() => _ChatTabState();
+}
+
+class _ChatTabState extends State<_ChatTab> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage(SquadProvider squad) {
+    final sent = squad.sendChatMessage(
+      widget.group.id,
+      _messageController.text,
+    );
+    if (!sent) return;
+
+    _messageController.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SquadProvider>(
+      builder: (context, squad, _) {
+        final messages = squad.getChatMessages(widget.group.id);
+
+        return Column(
+          children: [
+            Expanded(
+              child: messages.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No messages yet.',
+                        style: TextStyle(color: AppColors.grey, fontSize: 16),
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                      itemCount: messages.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMine = message.senderId == squad.currentUserId;
+                        return _ChatBubble(message: message, isMine: isMine);
+                      },
+                    ),
+            ),
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(
+                    top: BorderSide(color: AppColors.greyDark, width: 1),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        minLines: 1,
+                        maxLines: 4,
+                        style: const TextStyle(color: AppColors.white),
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendMessage(squad),
+                        decoration: InputDecoration(
+                          hintText: 'Message ${widget.group.name}',
+                          hintStyle: const TextStyle(color: AppColors.grey),
+                          filled: true,
+                          fillColor: AppColors.card,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: AppColors.greyDark,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: AppColors.orange,
+                              width: 1.4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () => _sendMessage(squad),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orange,
+                          foregroundColor: Colors.black,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Icon(Icons.send, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ChatBubble extends StatelessWidget {
+  final SquadChatMessage message;
+  final bool isMine;
+
+  const _ChatBubble({required this.message, required this.isMine});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.76,
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isMine ? AppColors.orange : AppColors.card,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(isMine ? 16 : 4),
+              bottomRight: Radius.circular(isMine ? 4 : 16),
+            ),
+            border: Border.all(
+              color: isMine ? AppColors.orange : AppColors.greyDark,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: isMine
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              Text(
+                message.senderName,
+                style: TextStyle(
+                  color: isMine ? Colors.black87 : AppColors.orange,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                message.text,
+                style: TextStyle(
+                  color: isMine ? Colors.black : AppColors.white,
+                  fontSize: 15,
+                  height: 1.25,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _formatTime(message.sentAt),
+                style: TextStyle(
+                  color: isMine ? Colors.black54 : AppColors.grey,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
   }
 }

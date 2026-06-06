@@ -6,6 +6,43 @@ enum RiderRole {
   tail,
 }
 
+enum SquadKind { solo, duo, squad }
+
+extension SquadKindExtension on SquadKind {
+  String get displayName {
+    switch (this) {
+      case SquadKind.solo:
+        return 'Solo';
+      case SquadKind.duo:
+        return 'Duo';
+      case SquadKind.squad:
+        return 'Squad';
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case SquadKind.solo:
+        return 'Ride alone with your own stats and chat notes.';
+      case SquadKind.duo:
+        return 'Add one rider and set front or tail positions.';
+      case SquadKind.squad:
+        return 'Build a full group with assigned riding positions.';
+    }
+  }
+
+  int? get maxAdditionalMembers {
+    switch (this) {
+      case SquadKind.solo:
+        return 0;
+      case SquadKind.duo:
+        return 1;
+      case SquadKind.squad:
+        return null;
+    }
+  }
+}
+
 extension RiderRoleExtension on RiderRole {
   String get displayName {
     switch (this) {
@@ -88,12 +125,14 @@ class RiderGroup {
   String name;
   List<Rider> members;
   final String leaderId;
+  final SquadKind kind;
 
   RiderGroup({
     required this.id,
     required this.name,
     required this.members,
     required this.leaderId,
+    this.kind = SquadKind.squad,
   });
 
   Rider? get leader =>
@@ -126,4 +165,29 @@ class RiderGroup {
       ...leaders,
     ];
   }
+}
+
+class SquadMemberSetup {
+  final String name;
+  final RiderRole role;
+
+  const SquadMemberSetup({required this.name, required this.role});
+}
+
+class SquadChatMessage {
+  final String id;
+  final String groupId;
+  final String senderId;
+  final String senderName;
+  final String text;
+  final DateTime sentAt;
+
+  SquadChatMessage({
+    required this.id,
+    required this.groupId,
+    required this.senderId,
+    required this.senderName,
+    required this.text,
+    required this.sentAt,
+  });
 }

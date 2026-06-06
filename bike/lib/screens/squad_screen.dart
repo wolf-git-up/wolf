@@ -32,70 +32,28 @@ class _SquadScreenState extends State<SquadScreen>
     super.dispose();
   }
 
-  void _showCreateGroupDialog(BuildContext context) {
-    final ctrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.orange, width: 1.2),
+  Future<void> _openCreateGroupFlow(BuildContext context) async {
+    final squadProvider = context.read<SquadProvider>();
+    final groupId = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: squadProvider,
+          child: const _SquadCreationScreen(),
         ),
-        title: const Text(
-          'Create New Group',
-          style: TextStyle(
-            color: AppColors.orange,
-            fontWeight: FontWeight.w700,
-          ),
+      ),
+    );
+
+    if (!mounted || groupId == null) return;
+    final group = squadProvider.groups.firstWhere((group) => group.id == groupId);
+    squadProvider.setActiveGroup(group);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChangeNotifierProvider.value(
+          value: squadProvider,
+          child: GroupDetailScreen(groupId: group.id),
         ),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          style: const TextStyle(color: AppColors.white),
-          decoration: InputDecoration(
-            hintText: 'e.g. Thunder Hawks',
-            hintStyle: const TextStyle(color: AppColors.grey),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.greyDark),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
-            ),
-            filled: true,
-            fillColor: AppColors.card,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.grey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              if (ctrl.text.trim().isNotEmpty) {
-                context.read<SquadProvider>().createGroup(ctrl.text.trim());
-                Navigator.pop(ctx);
-              }
-            },
-            child: const Text(
-              'Create',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -160,7 +118,7 @@ class _SquadScreenState extends State<SquadScreen>
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             tooltip: 'Create Group',
-            onPressed: () => _showCreateGroupDialog(context),
+            onPressed: () => _openCreateGroupFlow(context),
           ),
           Consumer<SquadProvider>(
             builder: (context, squad, _) {
@@ -196,7 +154,7 @@ class _SquadScreenState extends State<SquadScreen>
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateGroupDialog(context),
+        onPressed: () => _openCreateGroupFlow(context),
         backgroundColor: AppColors.orange,
         foregroundColor: Colors.black,
         icon: const Icon(Icons.group_add),
@@ -244,7 +202,7 @@ class _SquadScreenState extends State<SquadScreen>
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
-            onPressed: () => _showCreateGroupDialog(context),
+            onPressed: () => _openCreateGroupFlow(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
               foregroundColor: Colors.black,
@@ -331,7 +289,7 @@ class _SquadScreenState extends State<SquadScreen>
                           ),
                         ),
                         Text(
-                          '${group.members.length} rider${group.members.length != 1 ? 's' : ''}',
+                          '${group.kind.displayName} - ${group.members.length} rider${group.members.length != 1 ? 's' : ''}',
                           style: const TextStyle(
                             color: AppColors.grey,
                             fontSize: 13,
@@ -418,6 +376,578 @@ class _SquadScreenState extends State<SquadScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SquadCreationScreen extends StatefulWidget {
+  const _SquadCreationScreen();
+
+  @override
+  State<_SquadCreationScreen> createState() => _SquadCreationScreenState();
+}
+
+class _SquadCreationScreenState extends State<_SquadCreationScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _memberController = TextEditingController();
+  final List<_DraftMember> _members = [];
+  SquadKind _kind = SquadKind.squad;
+  int _step = 0;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _memberController.dispose();
+    super.dispose();
+  }
+
+  int? get _memberLimit => _kind.maxAdditionalMembers;
+
+  bool get _canAddMember {
+    final limit = _memberLimit;
+    return limit == null || _members.length < limit;
+  }
+
+  void _selectKind(SquadKind kind) {
+    setState(() {
+      _kind = kind;
+      final limit = _memberLimit;
+      if (limit != null && _members.length > limit) {
+        _members.removeRange(limit, _members.length);
+      }
+    });
+  }
+
+  void _addMember() {
+    final name = _memberController.text.trim();
+    if (name.isEmpty || !_canAddMember) return;
+
+    setState(() {
+      _members.add(
+        _DraftMember(
+          name: name,
+          role: _kind == SquadKind.duo ? RiderRole.coLeader : RiderRole.midRider,
+        ),
+      );
+      _memberController.clear();
+    });
+  }
+
+  void _goNext() {
+    if (_step == 0 && _nameController.text.trim().isEmpty) return;
+    if (_step < 2) {
+      setState(() => _step += 1);
+      return;
+    }
+
+    final group = context.read<SquadProvider>().createConfiguredGroup(
+      name: _nameController.text.trim(),
+      kind: _kind,
+      members: _members
+          .map((member) => SquadMemberSetup(name: member.name, role: member.role))
+          .toList(),
+    );
+    Navigator.pop(context, group.id);
+  }
+
+  void _goBack() {
+    if (_step == 0) {
+      Navigator.pop(context);
+      return;
+    }
+    setState(() => _step -= 1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('New Squad'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+        ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _StepHeader(step: _step),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: _buildStep(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _goBack,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.grey,
+                        side: const BorderSide(color: AppColors.greyDark),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(_step == 0 ? 'Cancel' : 'Back'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _goNext,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text(_step == 2 ? 'Create' : 'Next'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStep() {
+    switch (_step) {
+      case 0:
+        return _buildTypeStep();
+      case 1:
+        return _buildMembersStep();
+      default:
+        return _buildPositionsStep();
+    }
+  }
+
+  Widget _buildTypeStep() {
+    return Column(
+      key: const ValueKey('type-step'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Squad details',
+          style: TextStyle(
+            color: AppColors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 14),
+        TextField(
+          controller: _nameController,
+          autofocus: true,
+          style: const TextStyle(color: AppColors.white),
+          decoration: InputDecoration(
+            hintText: 'Squad name',
+            hintStyle: const TextStyle(color: AppColors.grey),
+            prefixIcon: const Icon(Icons.edit, color: AppColors.orange),
+            filled: true,
+            fillColor: AppColors.card,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppColors.greyDark),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
+            ),
+          ),
+        ),
+        const SizedBox(height: 22),
+        const Text(
+          'Ride setup',
+          style: TextStyle(
+            color: AppColors.orange,
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _KindChoice(
+          kind: SquadKind.solo,
+          selected: _kind == SquadKind.solo,
+          icon: Icons.person,
+          onTap: () => _selectKind(SquadKind.solo),
+        ),
+        const SizedBox(height: 10),
+        _KindChoice(
+          kind: SquadKind.duo,
+          selected: _kind == SquadKind.duo,
+          icon: Icons.people,
+          onTap: () => _selectKind(SquadKind.duo),
+        ),
+        const SizedBox(height: 10),
+        _KindChoice(
+          kind: SquadKind.squad,
+          selected: _kind == SquadKind.squad,
+          icon: Icons.groups,
+          onTap: () => _selectKind(SquadKind.squad),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMembersStep() {
+    final limit = _memberLimit;
+    final memberCountText = limit == null
+        ? '${_members.length} added'
+        : '${_members.length}/$limit added';
+
+    return Column(
+      key: const ValueKey('members-step'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Add members',
+          style: const TextStyle(
+            color: AppColors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          _kind == SquadKind.solo
+              ? 'Solo squads only include you.'
+              : memberCountText,
+          style: const TextStyle(color: AppColors.grey, fontSize: 14),
+        ),
+        const SizedBox(height: 16),
+        if (_kind != SquadKind.solo)
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _memberController,
+                  enabled: _canAddMember,
+                  style: const TextStyle(color: AppColors.white),
+                  onSubmitted: (_) => _addMember(),
+                  decoration: InputDecoration(
+                    hintText: _canAddMember ? 'Rider name' : 'Member limit hit',
+                    hintStyle: const TextStyle(color: AppColors.grey),
+                    filled: true,
+                    fillColor: AppColors.card,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(color: AppColors.greyDark),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: const BorderSide(
+                        color: AppColors.orange,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              SizedBox(
+                width: 48,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: _canAddMember ? _addMember : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.orange,
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(Icons.add),
+                ),
+              ),
+            ],
+          ),
+        const SizedBox(height: 16),
+        _MemberPreview(
+          name: 'You (Leader)',
+          role: RiderRole.leader,
+          onRemove: null,
+        ),
+        const SizedBox(height: 10),
+        ..._members.map(
+          (member) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _MemberPreview(
+              name: member.name,
+              role: member.role,
+              onRemove: () => setState(() => _members.remove(member)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPositionsStep() {
+    return Column(
+      key: const ValueKey('positions-step'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Positions',
+          style: TextStyle(
+            color: AppColors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Choose how each rider sits in the formation.',
+          style: TextStyle(color: AppColors.grey, fontSize: 14),
+        ),
+        const SizedBox(height: 16),
+        _PositionRow(
+          name: 'You (Leader)',
+          role: RiderRole.leader,
+          locked: true,
+          onChanged: null,
+        ),
+        const SizedBox(height: 10),
+        ..._members.map(
+          (member) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _PositionRow(
+              name: member.name,
+              role: member.role,
+              locked: false,
+              onChanged: (role) => setState(() => member.role = role),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DraftMember {
+  final String name;
+  RiderRole role;
+
+  _DraftMember({required this.name, required this.role});
+}
+
+class _StepHeader extends StatelessWidget {
+  final int step;
+
+  const _StepHeader({required this.step});
+
+  @override
+  Widget build(BuildContext context) {
+    const labels = ['Type', 'Members', 'Positions'];
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      child: Row(
+        children: [
+          for (int i = 0; i < labels.length; i++) ...[
+            Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: i <= step ? AppColors.orange : AppColors.greyDark,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    labels[i],
+                    style: TextStyle(
+                      color: i == step ? AppColors.orange : AppColors.grey,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (i != labels.length - 1) const SizedBox(width: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _KindChoice extends StatelessWidget {
+  final SquadKind kind;
+  final bool selected;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _KindChoice({
+    required this.kind,
+    required this.selected,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OrangeCard(
+      onTap: onTap,
+      borderColor: selected ? AppColors.orange : AppColors.greyDark,
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: selected ? AppColors.orangeGlow : AppColors.greyDark,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: AppColors.orange, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  kind.displayName,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  kind.description,
+                  style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            selected ? Icons.radio_button_checked : Icons.radio_button_off,
+            color: selected ? AppColors.orange : AppColors.grey,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MemberPreview extends StatelessWidget {
+  final String name;
+  final RiderRole role;
+  final VoidCallback? onRemove;
+
+  const _MemberPreview({
+    required this.name,
+    required this.role,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OrangeCard(
+      borderColor: AppColors.greyDark,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 5),
+                RoleChip(role: role, compact: true),
+              ],
+            ),
+          ),
+          if (onRemove != null)
+            IconButton(
+              onPressed: onRemove,
+              icon: const Icon(Icons.close, color: AppColors.grey),
+              tooltip: 'Remove',
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PositionRow extends StatelessWidget {
+  final String name;
+  final RiderRole role;
+  final bool locked;
+  final void Function(RiderRole role)? onChanged;
+
+  const _PositionRow({
+    required this.name,
+    required this.role,
+    required this.locked,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OrangeCard(
+      borderColor: locked ? AppColors.orange : AppColors.greyDark,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              name,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 12),
+          if (locked)
+            RoleChip(role: role, compact: true)
+          else
+            DropdownButtonHideUnderline(
+              child: DropdownButton<RiderRole>(
+                value: role,
+                dropdownColor: AppColors.surface,
+                iconEnabledColor: AppColors.orange,
+                style: const TextStyle(color: AppColors.white),
+                items: RiderRole.values
+                    .where((role) => role != RiderRole.leader)
+                    .map(
+                      (role) => DropdownMenuItem(
+                        value: role,
+                        child: Text(role.displayName),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (role) {
+                  if (role != null) onChanged?.call(role);
+                },
+              ),
+            ),
+        ],
       ),
     );
   }
