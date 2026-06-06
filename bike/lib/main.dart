@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'models/rider_model.dart';
 import 'providers/squad_provider.dart';
 import 'providers/bike_provider.dart';
 import 'providers/ride_provider.dart';
 import 'screens/expenses_screen.dart';
+import 'screens/ride_name_screen.dart';
 import 'screens/squad_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/stats_screen.dart';
@@ -71,8 +73,9 @@ class _MainShellState extends State<MainShell> {
       _HomeScreen(
         onSquadTap: () => setState(() => _selectedIndex = 2),
         onReportsTap: () => setState(() => _selectedIndex = 3),
+        onRideStarted: () => setState(() => _selectedIndex = 1),
       ),
-      const _PlaceholderScreen(label: 'Map'),
+      MapTabScreen(onRideEnded: () => setState(() => _selectedIndex = 0)),
       const SquadScreen(),
       const StatsScreen(),
       const SettingsScreen(),
@@ -85,24 +88,29 @@ class _MainShellState extends State<MainShell> {
       backgroundColor: AppColors.background,
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.orange, width: 1)),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.orange, width: 3)),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (i) => setState(() => _selectedIndex = i),
-          backgroundColor: AppColors.background,
-          selectedItemColor: AppColors.orange,
-          unselectedItemColor: const Color.fromARGB(255, 247, 241, 241),
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          items: List.generate(
-            _labels.length,
-            (i) => BottomNavigationBarItem(
-              icon: Icon(_icons[i]),
-              activeIcon: Icon(_selectedIcons[i]),
-              label: _labels[i],
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.blue, width: 2)),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (i) => setState(() => _selectedIndex = i),
+            backgroundColor: AppColors.background,
+            selectedItemColor: AppColors.orange,
+            unselectedItemColor: const Color.fromARGB(255, 247, 241, 241),
+            type: BottomNavigationBarType.fixed,
+            selectedFontSize: 11,
+            unselectedFontSize: 11,
+            items: List.generate(
+              _labels.length,
+              (i) => BottomNavigationBarItem(
+                icon: Icon(_icons[i]),
+                activeIcon: Icon(_selectedIcons[i]),
+                label: _labels[i],
+              ),
             ),
           ),
         ),
@@ -115,8 +123,13 @@ class _MainShellState extends State<MainShell> {
 class _HomeScreen extends StatelessWidget {
   final VoidCallback? onSquadTap;
   final VoidCallback? onReportsTap;
+  final VoidCallback onRideStarted;
 
-  const _HomeScreen({this.onSquadTap, this.onReportsTap});
+  const _HomeScreen({
+    this.onSquadTap,
+    this.onReportsTap,
+    required this.onRideStarted,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +208,7 @@ class _HomeScreen extends StatelessWidget {
                       237,
                       190,
                       146,
-                    ).withOpacity(0.08),
+                    ).withValues(alpha: 0.08),
                     blurRadius: 12,
                   ),
                 ],
@@ -243,7 +256,15 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.play_arrow,
                   title: 'Start Ride',
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            RideNameScreen(onRideStarted: onRideStarted),
+                      ),
+                    );
+                  },
                 ),
                 _ActionCard(
                   icon: Icons.groups,
@@ -354,7 +375,12 @@ class _ActionCard extends StatelessWidget {
           border: Border.all(color: AppColors.orange, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(255, 235, 191, 151).withOpacity(0.08),
+              color: const Color.fromARGB(
+                255,
+                235,
+                191,
+                151,
+              ).withValues(alpha: 0.08),
               blurRadius: 10,
             ),
           ],
@@ -478,22 +504,222 @@ class _RideHistoryCard extends StatelessWidget {
   }
 }
 
-// ─── Placeholder Screens ───────────────────────────────────────────────────────
-class _PlaceholderScreen extends StatelessWidget {
-  final String label;
-  const _PlaceholderScreen({required this.label});
+// ─── Map Tab Screen ─────────────────────────────────────────────────────────
+class MapTabScreen extends StatefulWidget {
+  final VoidCallback onRideEnded;
+
+  const MapTabScreen({super.key, required this.onRideEnded});
+
+  @override
+  State<MapTabScreen> createState() => _MapTabScreenState();
+}
+
+class _MapTabScreenState extends State<MapTabScreen> {
+  String _modeLabel(RideMode mode) {
+    switch (mode) {
+      case RideMode.duo:
+        return 'Duo Ride';
+      case RideMode.squad:
+        return 'Squad Ride';
+      case RideMode.solo:
+        return 'Solo Ride';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final setup = context.watch<RideSetup>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(label)),
-      body: Center(
-        child: Text(
-          label,
-          style: const TextStyle(color: AppColors.grey, fontSize: 18),
-        ),
+      appBar: AppBar(title: const Text('Map')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child:
+            setup.rideName == null ||
+                setup.fromLocation == null ||
+                setup.toLocation == null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.map_outlined, color: AppColors.grey, size: 66),
+                    SizedBox(height: 16),
+                    Text(
+                      'No active ride yet',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Start a ride from the Home tab to see the map here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.grey, fontSize: 14),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    setup.rideName!,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.blue, width: 1.2),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.route, color: AppColors.orange),
+                            const SizedBox(width: 10),
+                            Text(
+                              _modeLabel(setup.rideMode),
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _MapInfoRow(
+                          label: 'From',
+                          value: setup.fromLocation ?? '-',
+                        ),
+                        const SizedBox(height: 8),
+                        _MapInfoRow(
+                          label: 'To',
+                          value: setup.toLocation ?? '-',
+                        ),
+                        if (setup.isGroupRide) ...[
+                          const SizedBox(height: 8),
+                          _MapInfoRow(
+                            label: 'Squad',
+                            value: setup.selectedSquadId ?? 'Unknown',
+                          ),
+                          const SizedBox(height: 8),
+                          _MapInfoRow(
+                            label: 'Role',
+                            value:
+                                setup.selectedRole?.displayName ??
+                                'Not selected',
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange,
+                        foregroundColor: AppColors.background,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: AppColors.surface,
+                            title: const Text('End Ride'),
+                            content: const Text(
+                              'Do you want to end this ride?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text('End Ride'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed != true || !mounted) {
+                          return;
+                        }
+
+                        context.read<RideSetup>().endRide();
+                        widget.onRideEnded();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Ride ended successfully'),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'End Ride',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Center(
+                      child: Icon(
+                        Icons.location_pin,
+                        size: 120,
+                        color: AppColors.orange.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
+    );
+  }
+}
+
+class _MapInfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _MapInfoRow({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          '$label:',
+          style: const TextStyle(color: AppColors.grey, fontSize: 14),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

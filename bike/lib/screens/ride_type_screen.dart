@@ -6,7 +6,9 @@ import 'ride_location_screen.dart';
 import 'squad_selection_screen.dart';
 
 class RideTypeScreen extends StatelessWidget {
-  const RideTypeScreen({super.key});
+  final VoidCallback onRideStarted;
+
+  const RideTypeScreen({super.key, required this.onRideStarted});
 
   @override
   Widget build(BuildContext context) {
@@ -34,35 +36,53 @@ class RideTypeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              'Are you riding solo or with your squad?',
+              'Choose solo, duo, or squad and continue your ride setup.',
               style: TextStyle(color: AppColors.grey, fontSize: 14),
             ),
             const SizedBox(height: 32),
-            // Solo Ride Option
             _RideTypeCard(
               icon: Icons.person,
               title: 'Solo Ride',
               description: 'Ride alone and track your journey',
               onTap: () {
-                context.read<RideSetup>().setRideType(true);
+                context.read<RideSetup>().setRideMode(RideMode.solo);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const RideLocationScreen()),
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        RideLocationScreen(onRideStarted: onRideStarted),
+                  ),
                 );
               },
             ),
             const SizedBox(height: 16),
-            // Group Ride Option
             _RideTypeCard(
-              icon: Icons.groups,
-              title: 'Group Ride',
-              description: 'Ride with your squad and team',
+              icon: Icons.person_add,
+              title: 'Duo Ride',
+              description: 'Ride with one partner from your squad',
               onTap: () {
-                context.read<RideSetup>().setRideType(false);
+                context.read<RideSetup>().setRideMode(RideMode.duo);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const SquadSelectionScreen(),
+                    builder: (_) =>
+                        SquadSelectionScreen(onRideStarted: onRideStarted),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            _RideTypeCard(
+              icon: Icons.groups,
+              title: 'Squad Ride',
+              description: 'Ride with your full squad team',
+              onTap: () {
+                context.read<RideSetup>().setRideMode(RideMode.squad);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        SquadSelectionScreen(onRideStarted: onRideStarted),
                   ),
                 );
               },
@@ -99,7 +119,10 @@ class _RideTypeCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.white, width: 1.2),
           boxShadow: [
-            BoxShadow(color: AppColors.orange.withOpacity(0.1), blurRadius: 12),
+            BoxShadow(
+              color: AppColors.orange.withValues(alpha: 0.1),
+              blurRadius: 12,
+            ),
           ],
         ),
         child: Row(
@@ -108,7 +131,7 @@ class _RideTypeCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.orange.withOpacity(0.15),
+                color: AppColors.orange.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: AppColors.orange, size: 28),

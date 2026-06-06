@@ -227,10 +227,10 @@ class _SettingsTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.orangeGlow,
+                  color: AppColors.blueGlow,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: AppColors.orange, size: 20),
+                child: Icon(icon, color: AppColors.blue, size: 20),
               ),
               const SizedBox(width: 14),
               Expanded(

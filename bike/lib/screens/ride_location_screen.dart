@@ -5,7 +5,9 @@ import '../providers/ride_provider.dart';
 import '../theme/app_theme.dart';
 
 class RideLocationScreen extends StatefulWidget {
-  const RideLocationScreen({super.key});
+  final VoidCallback onRideStarted;
+
+  const RideLocationScreen({super.key, required this.onRideStarted});
 
   @override
   State<RideLocationScreen> createState() => _RideLocationScreenState();
@@ -37,8 +39,19 @@ class _RideLocationScreenState extends State<RideLocationScreen> {
     setup.setFromLocation(from);
     setup.setToLocation(to);
 
+    if (!setup.isComplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Complete the ride setup before starting'),
+        ),
+      );
+      return;
+    }
+
+    widget.onRideStarted();
+    Navigator.popUntil(context, (route) => route.isFirst);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Ride setup saved')),
+      const SnackBar(content: Text('Ride started! Navigating to Map')),
     );
   }
 
@@ -83,7 +96,10 @@ class _RideLocationScreenState extends State<RideLocationScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _saveLocations,
-                child: const Text('Save Route'),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text('Start Ride', style: TextStyle(fontSize: 16)),
+                ),
               ),
             ),
           ],

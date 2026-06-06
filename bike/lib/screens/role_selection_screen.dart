@@ -7,7 +7,9 @@ import '../theme/app_theme.dart';
 import 'ride_location_screen.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
-  const RoleSelectionScreen({super.key});
+  final VoidCallback onRideStarted;
+
+  const RoleSelectionScreen({super.key, required this.onRideStarted});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,10 @@ class RoleSelectionScreen extends StatelessWidget {
               context.read<RideSetup>().setSelectedRole(role);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const RideLocationScreen()),
+                MaterialPageRoute(
+                  builder: (_) =>
+                      RideLocationScreen(onRideStarted: onRideStarted),
+                ),
               );
             },
             child: Container(

@@ -7,14 +7,65 @@ import '../providers/ride_provider.dart';
 import 'role_selection_screen.dart';
 
 class SquadSelectionScreen extends StatelessWidget {
-  const SquadSelectionScreen({super.key});
+  final VoidCallback onRideStarted;
+
+  const SquadSelectionScreen({super.key, required this.onRideStarted});
+
+  void _showCreateGroupDialog(BuildContext context) {
+    final controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: const Text('Create Squad'),
+          content: TextField(
+            controller: controller,
+            style: const TextStyle(color: AppColors.white),
+            decoration: const InputDecoration(
+              hintText: 'Squad name',
+              hintStyle: TextStyle(color: AppColors.grey),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final name = controller.text.trim();
+                if (name.isEmpty) return;
+                final squadProvider = context.read<SquadProvider>();
+                squadProvider.createGroup(name);
+                final newGroup = squadProvider.activeGroup;
+                if (newGroup != null) {
+                  context.read<RideSetup>().setSelectedSquad(newGroup.id);
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          RoleSelectionScreen(onRideStarted: onRideStarted),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Select Squad'),
+        title: const Text('Join or Create Squad'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -24,53 +75,86 @@ class SquadSelectionScreen extends StatelessWidget {
         builder: (context, squadProvider, _) {
           final squads = squadProvider.groups;
 
-          if (squads.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.groups_outlined,
-                    size: 64,
-                    color: AppColors.orange,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'No squads yet',
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Create a squad to start group rides',
-                    style: TextStyle(color: AppColors.grey),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
+          return Padding(
             padding: const EdgeInsets.all(16),
-            itemCount: squads.length,
-            itemBuilder: (context, index) {
-              final squad = squads[index];
-              return _SquadCard(
-                squad: squad,
-                onSelect: () {
-                  context.read<RideSetup>().setSelectedSquad(squad.id);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const RoleSelectionScreen(),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Select an existing squad or create a new one to continue.',
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
-                  );
-                },
-              );
-            },
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () => _showCreateGroupDialog(context),
+                      child: const Text('Create Squad'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (squads.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.groups_outlined,
+                            size: 64,
+                            color: AppColors.orange,
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No squads yet',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Create a squad to start group rides',
+                            style: TextStyle(color: AppColors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 0),
+                      itemCount: squads.length,
+                      itemBuilder: (context, index) {
+                        final squad = squads[index];
+                        return _SquadCard(
+                          squad: squad,
+                          onSelect: () {
+                            context.read<RideSetup>().setSelectedSquad(
+                              squad.id,
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => RoleSelectionScreen(
+                                  onRideStarted: onRideStarted,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
           );
         },
       ),
