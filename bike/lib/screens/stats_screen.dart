@@ -172,7 +172,7 @@ class _GroupsLedTab extends StatelessWidget {
                     roleDistribution: groupStats.roleDistribution,
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
         );
@@ -426,7 +426,7 @@ class _GroupStatsCard extends StatelessWidget {
                   style: const TextStyle(color: AppColors.white, fontSize: 12),
                 ),
               );
-            }).toList(),
+            }),
           ],
         ],
       ),
@@ -572,7 +572,7 @@ class _GroupDetailCard extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ],
       ),

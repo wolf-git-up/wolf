@@ -27,10 +27,10 @@ class AppTheme {
     ),
     fontFamily: 'Roboto',
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.background,
+      backgroundColor: Color.fromARGB(255, 0, 0, 0),
       elevation: 0,
       titleTextStyle: TextStyle(
-        color: AppColors.orange,
+        color: Color.fromARGB(255, 255, 255, 255),
         fontSize: 22,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
@@ -54,7 +54,7 @@ class AppTheme {
       bodyLarge: TextStyle(color: AppColors.white),
       bodyMedium: TextStyle(color: AppColors.grey),
       labelLarge: TextStyle(
-        color: AppColors.orange,
+        color: Color.fromARGB(255, 206, 111, 22),
         fontWeight: FontWeight.w600,
         letterSpacing: 1,
       ),
