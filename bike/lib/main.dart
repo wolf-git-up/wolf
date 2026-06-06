@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'models/rider_model.dart';
 import 'providers/squad_provider.dart';
 import 'providers/bike_provider.dart';
+import 'providers/ride_provider.dart';
+import 'screens/expenses_screen.dart';
+import 'screens/ride_name_screen.dart';
 import 'screens/squad_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/stats_screen.dart';
@@ -13,6 +17,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => SquadProvider()),
         ChangeNotifierProvider(create: (_) => BikeProvider()),
+        ChangeNotifierProvider(create: (_) => RideSetup()),
       ],
       child: const BikeSquadApp(),
     ),
@@ -43,7 +48,7 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _selectedIndex = 0;
 
-  static const _labels = ['Home', 'Map', 'Squad', 'Stats', 'Settings'];
+  static const _labels = ['Home', 'Map', 'Squad', 'Status', 'Settings'];
   static const _icons = [
     Icons.home_outlined,
     Icons.map_outlined,
@@ -65,8 +70,12 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
     _screens = [
-      _HomeScreen(onSquadTap: () => setState(() => _selectedIndex = 2)),
-      const _PlaceholderScreen(label: 'Map'),
+      _HomeScreen(
+        onSquadTap: () => setState(() => _selectedIndex = 2),
+        onReportsTap: () => setState(() => _selectedIndex = 3),
+        onRideStarted: () => setState(() => _selectedIndex = 1),
+      ),
+      MapTabScreen(onRideEnded: () => setState(() => _selectedIndex = 0)),
       const SquadScreen(),
       const StatsScreen(),
       const SettingsScreen(),
@@ -79,24 +88,29 @@ class _MainShellState extends State<MainShell> {
       backgroundColor: AppColors.background,
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.orange, width: 1)),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.orange, width: 3)),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (i) => setState(() => _selectedIndex = i),
-          backgroundColor: AppColors.background,
-          selectedItemColor: AppColors.orange,
-          unselectedItemColor: AppColors.grey,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          items: List.generate(
-            _labels.length,
-            (i) => BottomNavigationBarItem(
-              icon: Icon(_icons[i]),
-              activeIcon: Icon(_selectedIcons[i]),
-              label: _labels[i],
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: AppColors.blue, width: 2)),
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (i) => setState(() => _selectedIndex = i),
+            backgroundColor: AppColors.background,
+            selectedItemColor: AppColors.orange,
+            unselectedItemColor: const Color.fromARGB(255, 247, 241, 241),
+            type: BottomNavigationBarType.fixed,
+            selectedFontSize: 11,
+            unselectedFontSize: 11,
+            items: List.generate(
+              _labels.length,
+              (i) => BottomNavigationBarItem(
+                icon: Icon(_icons[i]),
+                activeIcon: Icon(_selectedIcons[i]),
+                label: _labels[i],
+              ),
             ),
           ),
         ),
@@ -108,15 +122,21 @@ class _MainShellState extends State<MainShell> {
 // ─── Home Screen ──────────────────────────────────────────────────────────────
 class _HomeScreen extends StatelessWidget {
   final VoidCallback? onSquadTap;
+  final VoidCallback? onReportsTap;
+  final VoidCallback onRideStarted;
 
-  const _HomeScreen({this.onSquadTap});
+  const _HomeScreen({
+    this.onSquadTap,
+    this.onReportsTap,
+    required this.onRideStarted,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Bike Squad'),
+        title: const Text('Bike Squad', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -138,7 +158,10 @@ class _HomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.orangeGlow,
-                    border: Border.all(color: AppColors.orange, width: 2),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 187, 17, 31),
+                      width: 2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.person,
@@ -151,7 +174,7 @@ class _HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      'Welcome Rider 🔥',
+                      'Welcome buddy 🔥',
                       style: TextStyle(
                         color: AppColors.white,
                         fontSize: 20,
@@ -160,8 +183,8 @@ class _HomeScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Chennai Riders Squad',
-                      style: TextStyle(color: AppColors.grey, fontSize: 13),
+                      '3Bikers Squad',
+                      style: TextStyle(color: AppColors.white, fontSize: 13),
                     ),
                   ],
                 ),
@@ -177,10 +200,18 @@ class _HomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.card,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.orange, width: 1.2),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  width: 1.2,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.orange.withOpacity(0.08),
+                    color: const Color.fromARGB(
+                      255,
+                      237,
+                      190,
+                      146,
+                    ).withValues(alpha: 0.08),
                     blurRadius: 12,
                   ),
                 ],
@@ -211,7 +242,7 @@ class _HomeScreen extends StatelessWidget {
             const Text(
               'Quick Actions',
               style: TextStyle(
-                color: AppColors.white,
+                color: Color.fromARGB(255, 255, 255, 255),
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -228,22 +259,39 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.play_arrow,
                   title: 'Start Ride',
-                  onTap: () {},
+                  iconColor: Colors.black,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            RideNameScreen(onRideStarted: onRideStarted),
+                      ),
+                    );
+                  },
                 ),
                 _ActionCard(
                   icon: Icons.groups,
                   title: 'Squad',
+                  iconColor: Colors.black,
                   onTap: onSquadTap ?? () {},
                 ),
                 _ActionCard(
                   icon: Icons.currency_rupee,
                   title: 'Expenses',
-                  onTap: () {},
+                  iconColor: Colors.black,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ExpensesScreen()),
+                    );
+                  },
                 ),
                 _ActionCard(
                   icon: Icons.bar_chart,
                   title: 'Reports',
-                  onTap: () {},
+                  iconColor: Colors.black,
+                  onTap: onReportsTap ?? () {},
                 ),
               ],
             ),
@@ -254,7 +302,7 @@ class _HomeScreen extends StatelessWidget {
             const Text(
               'Recent Rides',
               style: TextStyle(
-                color: AppColors.white,
+                color: Color.fromARGB(255, 172, 170, 170),
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -314,6 +362,7 @@ class _RideInfoRow extends StatelessWidget {
 // ─── Action Card ───────────────────────────────────────────────────────────────
 class _ActionCard extends StatelessWidget {
   final IconData icon;
+  final Color? iconColor;
   final String title;
   final VoidCallback onTap;
 
@@ -321,6 +370,7 @@ class _ActionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
+    this.iconColor,
   });
 
   @override
@@ -329,12 +379,20 @@ class _ActionCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.orange, width: 1.2),
+          border: Border.all(
+            color: iconColor ?? Color.fromARGB(255, 187, 17, 31),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.orange.withOpacity(0.08),
+              color: const Color.fromARGB(
+                255,
+                237,
+                190,
+                146,
+              ).withValues(alpha: 0.08),
               blurRadius: 10,
             ),
           ],
@@ -342,12 +400,12 @@ class _ActionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.orange, size: 36),
+            Icon(icon, color: iconColor ?? AppColors.white, size: 36),
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(
-                color: AppColors.white,
+              style: TextStyle(
+                color: iconColor ?? AppColors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
@@ -373,64 +431,305 @@ class _RideHistoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.greyDark, width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                location,
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+    return ValueListenableBuilder<List<RideExpense>>(
+      valueListenable: rideExpensesNotifier,
+      builder: (context, rides, _) {
+        RideExpense? matchingRide;
+        for (final ride in rides) {
+          if (ride.rideName == location) {
+            matchingRide = ride;
+            break;
+          }
+        }
+        final rideForDetails = matchingRide;
+
+        return InkWell(
+          onTap: rideForDetails == null
+              ? null
+              : () => showRideExpenseDetails(context, rideForDetails),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.greyDark, width: 1),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        location,
+                        style: const TextStyle(
+                          color: AppColors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        distance,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 190, 190, 190),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                distance,
-                style: const TextStyle(color: AppColors.grey, fontSize: 13),
-              ),
-            ],
-          ),
-          Text(
-            expense,
-            style: const TextStyle(
-              color: AppColors.orange,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      matchingRide == null
+                          ? expense
+                          : formatMoney(matchingRide.total),
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    if (matchingRide != null) ...[
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.keyboard_arrow_right,
+                        color: Color.fromARGB(255, 255, 255, 255),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
             ),
           ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+// ─── Map Tab Screen ─────────────────────────────────────────────────────────
+class MapTabScreen extends StatefulWidget {
+  final VoidCallback onRideEnded;
+
+  const MapTabScreen({super.key, required this.onRideEnded});
+
+  @override
+  State<MapTabScreen> createState() => _MapTabScreenState();
+}
+
+class _MapTabScreenState extends State<MapTabScreen> {
+  String _modeLabel(RideMode mode) {
+    switch (mode) {
+      case RideMode.duo:
+        return 'Duo Ride';
+      case RideMode.squad:
+        return 'Squad Ride';
+      case RideMode.solo:
+        return 'Solo Ride';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final setup = context.watch<RideSetup>();
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(title: const Text('Map')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child:
+            setup.rideName == null ||
+                setup.fromLocation == null ||
+                setup.toLocation == null
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.map_outlined, color: AppColors.grey, size: 66),
+                    SizedBox(height: 16),
+                    Text(
+                      'No active ride yet',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Start a ride from the Home tab to see the map here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.grey, fontSize: 14),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    setup.rideName!,
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.blue, width: 1.2),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.route, color: AppColors.orange),
+                            const SizedBox(width: 10),
+                            Text(
+                              _modeLabel(setup.rideMode),
+                              style: const TextStyle(
+                                color: AppColors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _MapInfoRow(
+                          label: 'From',
+                          value: setup.fromLocation ?? '-',
+                        ),
+                        const SizedBox(height: 8),
+                        _MapInfoRow(
+                          label: 'To',
+                          value: setup.toLocation ?? '-',
+                        ),
+                        if (setup.isGroupRide) ...[
+                          const SizedBox(height: 8),
+                          _MapInfoRow(
+                            label: 'Squad',
+                            value: setup.selectedSquadId ?? 'Unknown',
+                          ),
+                          const SizedBox(height: 8),
+                          _MapInfoRow(
+                            label: 'Role',
+                            value:
+                                setup.selectedRole?.displayName ??
+                                'Not selected',
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange,
+                        foregroundColor: AppColors.background,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: AppColors.surface,
+                            title: const Text('End Ride'),
+                            content: const Text(
+                              'Do you want to end this ride?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: const Text('End Ride'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirmed != true || !mounted) {
+                          return;
+                        }
+
+                        context.read<RideSetup>().endRide();
+                        widget.onRideEnded();
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Ride ended successfully'),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'End Ride',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Center(
+                      child: Icon(
+                        Icons.location_pin,
+                        size: 120,
+                        color: AppColors.orange.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
 }
 
-// ─── Placeholder Screens ───────────────────────────────────────────────────────
-class _PlaceholderScreen extends StatelessWidget {
+class _MapInfoRow extends StatelessWidget {
   final String label;
-  const _PlaceholderScreen({required this.label});
+  final String value;
+
+  const _MapInfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(label)),
-      body: Center(
-        child: Text(
-          label,
-          style: const TextStyle(color: AppColors.grey, fontSize: 18),
+    return Row(
+      children: [
+        Text(
+          '$label:',
+          style: const TextStyle(color: AppColors.grey, fontSize: 14),
         ),
-      ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

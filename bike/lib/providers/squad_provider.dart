@@ -6,6 +6,7 @@ class SquadProvider extends ChangeNotifier {
   List<RiderGroup> _groups = [];
   RiderGroup? _activeGroup;
   List<RideRecord> _rideRecords = [];
+  final Map<String, List<SquadChatMessage>> _chatMessagesByGroup = {};
 
   // Simulate current logged-in user as leader
   final String currentUserId = 'user_001';
@@ -31,10 +32,21 @@ class SquadProvider extends ChangeNotifier {
         id: 'grp_001',
         name: 'Thunder Hawks',
         leaderId: currentUserId,
+        kind: SquadKind.squad,
         members: [leader],
       ),
     ];
     _activeGroup = _groups.first;
+    _chatMessagesByGroup['grp_001'] = [
+      SquadChatMessage(
+        id: 'msg_001',
+        groupId: 'grp_001',
+        senderId: currentUserId,
+        senderName: currentUserName,
+        text: 'Welcome to Thunder Hawks!',
+        sentAt: DateTime.now().subtract(const Duration(minutes: 12)),
+      ),
+    ];
 
     // Initialize with sample ride records
     _initSampleRides();
@@ -86,22 +98,47 @@ class SquadProvider extends ChangeNotifier {
     ];
   }
 
-  void createGroup(String name) {
+  RiderGroup createGroup(String name, {SquadKind kind = SquadKind.squad}) {
+    final group = createConfiguredGroup(name: name, kind: kind);
+    return group;
+  }
+
+  RiderGroup createConfiguredGroup({
+    required String name,
+    SquadKind kind = SquadKind.squad,
+    List<SquadMemberSetup> members = const [],
+  }) {
     final leader = Rider(
       id: currentUserId,
       name: currentUserName,
       role: RiderRole.leader,
       isCurrentUser: true,
     );
+    final maxAdditionalMembers = kind.maxAdditionalMembers;
+    final limitedMembers = maxAdditionalMembers == null
+        ? members
+        : members.take(maxAdditionalMembers).toList();
     final group = RiderGroup(
       id: 'grp_${DateTime.now().millisecondsSinceEpoch}',
       name: name,
       leaderId: currentUserId,
-      members: [leader],
+      kind: kind,
+      members: [
+        leader,
+        ...limitedMembers.map(
+          (member) => Rider(
+            id: 'rider_${DateTime.now().microsecondsSinceEpoch}_${member.name.hashCode.abs()}',
+            name: member.name,
+            role: member.role,
+          ),
+        ),
+      ],
     );
     _groups.add(group);
     _activeGroup = group;
+    _chatMessagesByGroup[group.id] = [];
     notifyListeners();
+    return group;
   }
 
   void setActiveGroup(RiderGroup group) {
@@ -139,8 +176,9 @@ class SquadProvider extends ChangeNotifier {
     final group = _getGroup(groupId);
     if (group == null) return false;
     if (!group.isLeader(currentUserId)) return false;
-    if (riderId == currentUserId && role != RiderRole.leader)
+    if (riderId == currentUserId && role != RiderRole.leader) {
       return false; // leader stays leader
+    }
 
     final idx = group.members.indexWhere((m) => m.id == riderId);
     if (idx == -1) return false;
@@ -163,12 +201,38 @@ class SquadProvider extends ChangeNotifier {
     if (!group.isLeader(currentUserId)) return false;
 
     _groups.removeWhere((g) => g.id == groupId);
+    _chatMessagesByGroup.remove(groupId);
 
     // If the deleted group was active, select another group or set to null
     if (_activeGroup?.id == groupId) {
       _activeGroup = _groups.isNotEmpty ? _groups.first : null;
     }
 
+    notifyListeners();
+    return true;
+  }
+
+  List<SquadChatMessage> getChatMessages(String groupId) {
+    return List.unmodifiable(_chatMessagesByGroup[groupId] ?? []);
+  }
+
+  bool sendChatMessage(String groupId, String text) {
+    final group = _getGroup(groupId);
+    final messageText = text.trim();
+    if (group == null || messageText.isEmpty) return false;
+    if (!group.members.any((member) => member.id == currentUserId)) {
+      return false;
+    }
+
+    final message = SquadChatMessage(
+      id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
+      groupId: groupId,
+      senderId: currentUserId,
+      senderName: currentUserName,
+      text: messageText,
+      sentAt: DateTime.now(),
+    );
+    _chatMessagesByGroup.putIfAbsent(groupId, () => []).add(message);
     notifyListeners();
     return true;
   }

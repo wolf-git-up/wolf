@@ -1268,8 +1268,9 @@ class _BikeCard extends StatelessWidget {
     if (name.contains('grey') || name.contains('gray')) return Colors.grey;
     if (name.contains('orange')) return Colors.orange;
     if (name.contains('purple')) return Colors.purple;
-    if (name.contains('chrome') || name.contains('silver'))
+    if (name.contains('chrome') || name.contains('silver')) {
       return Colors.grey[400]!;
+    }
     return AppColors.orange;
   }
 }
