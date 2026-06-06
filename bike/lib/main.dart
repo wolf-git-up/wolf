@@ -136,7 +136,7 @@ class _HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Bike Squad'),
+        title: const Text('Bike Squad', style: TextStyle(color: Colors.black)),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -158,7 +158,10 @@ class _HomeScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.orangeGlow,
-                    border: Border.all(color: AppColors.orange, width: 2),
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 187, 17, 31),
+                      width: 2,
+                    ),
                   ),
                   child: const Icon(
                     Icons.person,
@@ -239,7 +242,7 @@ class _HomeScreen extends StatelessWidget {
             const Text(
               'Quick Actions',
               style: TextStyle(
-                color: AppColors.white,
+                color: Color.fromARGB(255, 255, 255, 255),
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -256,6 +259,7 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.play_arrow,
                   title: 'Start Ride',
+                  iconColor: Colors.black,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -269,11 +273,13 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.groups,
                   title: 'Squad',
+                  iconColor: Colors.black,
                   onTap: onSquadTap ?? () {},
                 ),
                 _ActionCard(
                   icon: Icons.currency_rupee,
                   title: 'Expenses',
+                  iconColor: Colors.black,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -284,6 +290,7 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.bar_chart,
                   title: 'Reports',
+                  iconColor: Colors.black,
                   onTap: onReportsTap ?? () {},
                 ),
               ],
@@ -295,7 +302,7 @@ class _HomeScreen extends StatelessWidget {
             const Text(
               'Recent Rides',
               style: TextStyle(
-                color: AppColors.white,
+                color: Color.fromARGB(255, 172, 170, 170),
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -355,6 +362,7 @@ class _RideInfoRow extends StatelessWidget {
 // ─── Action Card ───────────────────────────────────────────────────────────────
 class _ActionCard extends StatelessWidget {
   final IconData icon;
+  final Color? iconColor;
   final String title;
   final VoidCallback onTap;
 
@@ -362,6 +370,7 @@ class _ActionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
+    this.iconColor,
   });
 
   @override
@@ -370,16 +379,19 @@ class _ActionCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.orange, width: 1.2),
+          border: Border.all(
+            color: iconColor ?? Color.fromARGB(255, 187, 17, 31),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
               color: const Color.fromARGB(
                 255,
-                235,
-                191,
-                151,
+                237,
+                190,
+                146,
               ).withValues(alpha: 0.08),
               blurRadius: 10,
             ),
@@ -388,16 +400,12 @@ class _ActionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: const Color.fromARGB(255, 255, 255, 255),
-              size: 36,
-            ),
+            Icon(icon, color: iconColor ?? AppColors.white, size: 36),
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(
-                color: AppColors.white,
+              style: TextStyle(
+                color: iconColor ?? AppColors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
@@ -481,7 +489,7 @@ class _RideHistoryCard extends StatelessWidget {
                           ? expense
                           : formatMoney(matchingRide.total),
                       style: const TextStyle(
-                        color: AppColors.orange,
+                        color: Color.fromARGB(255, 255, 255, 255),
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
@@ -490,7 +498,7 @@ class _RideHistoryCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       const Icon(
                         Icons.keyboard_arrow_right,
-                        color: AppColors.orange,
+                        color: Color.fromARGB(255, 255, 255, 255),
                       ),
                     ],
                   ],
@@ -635,6 +643,8 @@ class _MapTabScreenState extends State<MapTabScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+
                         final confirmed = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
@@ -662,7 +672,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
 
                         context.read<RideSetup>().endRide();
                         widget.onRideEnded();
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        messenger.showSnackBar(
                           const SnackBar(
                             content: Text('Ride ended successfully'),
                           ),

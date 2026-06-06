@@ -33,7 +33,7 @@ class AppTheme {
       backgroundColor: Color.fromARGB(255, 255, 255, 255),
       elevation: 0,
       titleTextStyle: TextStyle(
-        color: Color.fromARGB(255, 0, 0, 0),
+        color: Color.fromARGB(255, 255, 252, 252),
         fontSize: 22,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
