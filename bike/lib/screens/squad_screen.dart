@@ -187,7 +187,7 @@ class _SquadScreenState extends State<SquadScreen>
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: squad.groups.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (ctx, i) {
               final group = squad.groups[i];
               return _buildGroupCard(context, group, i);

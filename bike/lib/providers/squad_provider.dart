@@ -139,8 +139,9 @@ class SquadProvider extends ChangeNotifier {
     final group = _getGroup(groupId);
     if (group == null) return false;
     if (!group.isLeader(currentUserId)) return false;
-    if (riderId == currentUserId && role != RiderRole.leader)
+    if (riderId == currentUserId && role != RiderRole.leader) {
       return false; // leader stays leader
+    }
 
     final idx = group.members.indexWhere((m) => m.id == riderId);
     if (idx == -1) return false;

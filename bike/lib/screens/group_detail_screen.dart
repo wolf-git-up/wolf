@@ -358,7 +358,7 @@ class _MembersTab extends StatelessWidget {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: group.members.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (ctx, i) {
         final rider = group.members[i];
         final isSelf = rider.id == currentUserId;
