@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/app_theme.dart';
 import 'profile_screen.dart';
 
@@ -7,8 +8,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.watch<AppTheme>();
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: appTheme.isDarkMode
+          ? AppColors.backgroundDark
+          : AppColors.backgroundLight,
       appBar: AppBar(title: const Text('Settings')),
       body: SingleChildScrollView(
         child: Column(
@@ -46,11 +51,17 @@ class SettingsScreen extends StatelessWidget {
             // ─── Preferences Section ───────────────────────────────────────────
             _SectionHeader(title: 'PREFERENCES'),
             _SettingsTile(
-              icon: Icons.dark_mode_outlined,
+              icon: appTheme.isDarkMode
+                  ? Icons.dark_mode
+                  : Icons.light_mode_outlined,
               title: 'Theme',
-              subtitle: 'Dark mode',
-              trailing: const Icon(Icons.chevron_right, color: AppColors.grey),
-              onTap: () {},
+              subtitle: appTheme.isDarkMode ? 'Dark mode' : 'Light mode',
+              trailing: Switch(
+                value: appTheme.isDarkMode,
+                activeColor: AppColors.orange,
+                onChanged: (value) => appTheme.setTheme(value),
+              ),
+              onTap: () => appTheme.setTheme(!appTheme.isDarkMode),
             ),
             _SettingsTile(
               icon: Icons.language_outlined,

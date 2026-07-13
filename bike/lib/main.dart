@@ -18,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => SquadProvider()),
         ChangeNotifierProvider(create: (_) => BikeProvider()),
         ChangeNotifierProvider(create: (_) => RideSetup()),
+        ChangeNotifierProvider(create: (_) => AppTheme()),
       ],
       child: const BikeSquadApp(),
     ),
@@ -29,10 +30,12 @@ class BikeSquadApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.watch<AppTheme>();
+
     return MaterialApp(
       title: 'Bike Squad',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: appTheme.themeData,
       home: const MainShell(),
     );
   }

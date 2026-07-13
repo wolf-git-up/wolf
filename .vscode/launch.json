@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         
+        
         {
             "name": "bike",
             "cwd": "bike",
@@ -24,6 +25,13 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "bike (Flutter SM A156E)",
+            "cwd": "bike",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "SM A156E"
         }
     ]
 }

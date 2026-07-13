@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/squad_provider.dart';
 import '../../models/rider_model.dart';
 import '../../theme/app_theme.dart';
@@ -273,6 +274,136 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     }
   }
 
+  Future<void> _showGroupCallSheet(
+    BuildContext context,
+    RiderGroup group,
+  ) async {
+    final meetingUrl = Uri.parse('https://meet.google.com/new?authuser=0');
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: AppColors.orange, width: 1),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Container(
+                  width: 42,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.greyDark,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Icon(Icons.videocam, color: AppColors.orange, size: 34),
+              const SizedBox(height: 12),
+              const Text(
+                'Start Group Call',
+                style: TextStyle(
+                  color: AppColors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Launch a live online call for ${group.name} so everyone can stay connected while riding.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.greyDark),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.name,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${group.members.length} riders ready to join',
+                      style: const TextStyle(
+                        color: AppColors.grey,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close),
+                      label: const Text('Cancel'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.white,
+                        side: const BorderSide(color: AppColors.greyDark),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        final launched = await launchUrl(
+                          meetingUrl,
+                          mode: LaunchMode.externalApplication,
+                        );
+                        if (!launched && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Unable to open the call link right now.',
+                              ),
+                              backgroundColor: AppColors.surface,
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.call),
+                      label: const Text('Start Call'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<SquadProvider>(
@@ -287,6 +418,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(group.name),
+            actions: [
+              IconButton(
+                tooltip: 'Group call',
+                icon: const Icon(Icons.videocam),
+                onPressed: () => _showGroupCallSheet(context, group),
+              ),
+            ],
             bottom: TabBar(
               controller: _tabController,
               indicatorColor: AppColors.orange,
