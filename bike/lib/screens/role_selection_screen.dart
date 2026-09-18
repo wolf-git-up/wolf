@@ -57,7 +57,7 @@ class RoleSelectionScreen extends StatelessWidget {
                     child: Text(
                       role.displayName,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),

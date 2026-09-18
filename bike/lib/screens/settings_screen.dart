@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
               subtitle: appTheme.isDarkMode ? 'Dark mode' : 'Light mode',
               trailing: Switch(
                 value: appTheme.isDarkMode,
-                activeColor: AppColors.orange,
+                activeThumbColor: AppColors.orange,
                 onChanged: (value) => appTheme.setTheme(value),
               ),
               onTap: () => appTheme.setTheme(!appTheme.isDarkMode),
@@ -152,7 +152,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         content: const Text(
           'Are you sure you want to logout?',
-          style: TextStyle(color: AppColors.white),
+          style: TextStyle(color: AppColors.black),
         ),
         actions: [
           TextButton(
@@ -251,7 +251,7 @@ class _SettingsTile extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),

@@ -56,7 +56,7 @@ class _BikeBrandSelectionScreenState extends State<BikeBrandSelectionScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterBrands,
-              style: const TextStyle(color: AppColors.white),
+              style: const TextStyle(color: AppColors.black),
               decoration: InputDecoration(
                 hintText: 'Search brand...',
                 hintStyle: const TextStyle(color: AppColors.grey),
@@ -172,7 +172,7 @@ class _BrandCard extends StatelessWidget {
               child: Text(
                 brand.displayName,
                 style: const TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -236,7 +236,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Select Brand *',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -273,7 +273,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                         _selectedBrand?.displayName ?? 'Tap to select brand',
                         style: TextStyle(
                           color: _selectedBrand != null
-                              ? AppColors.white
+                              ? AppColors.black
                               : AppColors.grey,
                           fontSize: 14,
                         ),
@@ -293,7 +293,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Bike Name *',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -301,7 +301,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _bikeNameController,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   hintText: 'e.g., My Royal Enfield',
                   hintStyle: const TextStyle(color: AppColors.grey),
@@ -322,7 +322,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Model',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -330,7 +330,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _modelController,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   hintText: 'e.g., Classic 350',
                   hintStyle: const TextStyle(color: AppColors.grey),
@@ -351,7 +351,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Color',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -359,7 +359,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _colorController,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   hintText: 'e.g., Black',
                   hintStyle: const TextStyle(color: AppColors.grey),
@@ -380,7 +380,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'License Plate',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -388,7 +388,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _licensePlateController,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   hintText: 'e.g., TN-01-XX-0001',
                   hintStyle: const TextStyle(color: AppColors.grey),
@@ -409,7 +409,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Engine Capacity (CC)',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -418,7 +418,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               TextField(
                 controller: _engineCapacityController,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   hintText: 'e.g., 350',
                   hintStyle: const TextStyle(color: AppColors.grey),
@@ -439,7 +439,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Year of Purchase',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -476,7 +476,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                         _yearOfPurchase?.toString() ?? 'Select year',
                         style: TextStyle(
                           color: _yearOfPurchase != null
-                              ? AppColors.white
+                              ? AppColors.black
                               : AppColors.grey,
                           fontSize: 14,
                         ),

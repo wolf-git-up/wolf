@@ -142,7 +142,7 @@ class _GroupsLedTab extends StatelessWidget {
               const Text(
                 'Rides Per Group',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: Color.fromARGB(255, 0, 0, 0),
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
@@ -339,7 +339,7 @@ class _StatRow extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(color: AppColors.white, fontSize: 14),
+              style: const TextStyle(color: AppColors.black, fontSize: 14),
             ),
           ],
         ),
@@ -423,7 +423,7 @@ class _GroupStatsCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   '${e.key.displayName}: ${e.value}',
-                  style: const TextStyle(color: AppColors.white, fontSize: 12),
+                  style: const TextStyle(color: AppColors.black, fontSize: 12),
                 ),
               );
             }),
@@ -453,7 +453,7 @@ class _MiniStatRow extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(
-            color: AppColors.white,
+            color: AppColors.black,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
@@ -543,7 +543,7 @@ class _GroupDetailCard extends StatelessWidget {
                         Text(
                           '${entry.key.emoji} ${entry.key.displayName}',
                           style: const TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.black,
                             fontSize: 13,
                           ),
                         ),
@@ -690,7 +690,7 @@ class _LeadershipStatBar extends StatelessWidget {
             Text(
               label,
               style: const TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

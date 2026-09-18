@@ -179,7 +179,7 @@ class _HomeScreen extends StatelessWidget {
                     Text(
                       'Welcome buddy 🔥',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.black,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -187,7 +187,7 @@ class _HomeScreen extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       '3Bikers Squad',
-                      style: TextStyle(color: AppColors.white, fontSize: 13),
+                      style: TextStyle(color: AppColors.black, fontSize: 13),
                     ),
                   ],
                 ),
@@ -346,7 +346,7 @@ class _RideInfoRow extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(color: AppColors.white, fontSize: 15),
+            style: const TextStyle(color: AppColors.black, fontSize: 15),
           ),
           Text(
             value,
@@ -468,7 +468,7 @@ class _RideHistoryCard extends StatelessWidget {
                       Text(
                         location,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.black,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -559,7 +559,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                     Text(
                       'No active ride yet',
                       style: TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -579,7 +579,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                   Text(
                     setup.rideName!,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                     ),
@@ -602,7 +602,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                             Text(
                               _modeLabel(setup.rideMode),
                               style: const TextStyle(
-                                color: AppColors.white,
+                                color: AppColors.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -726,7 +726,7 @@ class _MapInfoRow extends StatelessWidget {
           child: Text(
             value,
             style: const TextStyle(
-              color: AppColors.white,
+              color: AppColors.black,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),

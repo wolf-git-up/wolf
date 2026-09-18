@@ -67,7 +67,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
           decoration: InputDecoration(
             hintText: "Rider's name",
             hintStyle: const TextStyle(color: AppColors.grey),
@@ -175,7 +175,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                         Text(
                           rider.name,
                           style: const TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.black,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
@@ -239,7 +239,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                   Text(
                     role.displayName,
                     style: TextStyle(
-                      color: isSelected ? AppColors.orange : AppColors.white,
+                      color: isSelected ? AppColors.orange : AppColors.black,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
@@ -310,7 +310,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               const Text(
                 'Start Group Call',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                 ),
@@ -336,7 +336,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                     Text(
                       group.name,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.black,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -526,7 +526,7 @@ class _MembersTab extends StatelessWidget {
                           child: Text(
                             rider.name,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: AppColors.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -600,7 +600,7 @@ class _MembersTab extends StatelessWidget {
         ),
         title: const Text(
           'Remove Rider?',
-          style: TextStyle(color: AppColors.white),
+          style: TextStyle(color: AppColors.black),
         ),
         content: Text(
           'Remove ${rider.name} from the group?',
@@ -756,7 +756,7 @@ class _FormationTab extends StatelessWidget {
                       Text(
                         rider.name.split(' ').first,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -898,7 +898,7 @@ class _ChatTabState extends State<_ChatTab> {
                         controller: _messageController,
                         minLines: 1,
                         maxLines: 4,
-                        style: const TextStyle(color: AppColors.white),
+                        style: const TextStyle(color: AppColors.black),
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => _sendMessage(squad),
                         decoration: InputDecoration(
@@ -1000,7 +1000,7 @@ class _ChatBubble extends StatelessWidget {
               Text(
                 message.text,
                 style: TextStyle(
-                  color: isMine ? Colors.black : AppColors.white,
+                  color: AppColors.black,
                   fontSize: 15,
                   height: 1.25,
                 ),

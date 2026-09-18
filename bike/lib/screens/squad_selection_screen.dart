@@ -22,7 +22,7 @@ class SquadSelectionScreen extends StatelessWidget {
           title: const Text('Create Squad'),
           content: TextField(
             controller: controller,
-            style: const TextStyle(color: AppColors.white),
+            style: const TextStyle(color: AppColors.black),
             decoration: const InputDecoration(
               hintText: 'Squad name',
               hintStyle: TextStyle(color: AppColors.grey),
@@ -85,7 +85,7 @@ class SquadSelectionScreen extends StatelessWidget {
                       child: Text(
                         'Select an existing squad or create a new one to continue.',
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.black,
                           fontSize: 14,
                         ),
                       ),
@@ -113,7 +113,7 @@ class SquadSelectionScreen extends StatelessWidget {
                           const Text(
                             'No squads yet',
                             style: TextStyle(
-                              color: AppColors.white,
+                              color: AppColors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
@@ -196,7 +196,7 @@ class _SquadCard extends StatelessWidget {
                       Text(
                         squad.name,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),

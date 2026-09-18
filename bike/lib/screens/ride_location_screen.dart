@@ -74,7 +74,7 @@ class _RideLocationScreenState extends State<RideLocationScreen> {
             const Text(
               'Route',
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
@@ -124,7 +124,7 @@ class _LocationField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: AppColors.white),
+      style: const TextStyle(color: AppColors.black),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.orange),

@@ -74,7 +74,7 @@ class _SquadScreenState extends State<SquadScreen>
         ),
         content: Text(
           'Are you sure you want to delete "$groupName"? This action cannot be undone.',
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
         ),
         actions: [
           TextButton(
@@ -189,7 +189,7 @@ class _SquadScreenState extends State<SquadScreen>
           const Text(
             'No Groups Yet',
             style: TextStyle(
-              color: AppColors.white,
+              color: AppColors.black,
               fontSize: 22,
               fontWeight: FontWeight.w700,
             ),
@@ -283,7 +283,7 @@ class _SquadScreenState extends State<SquadScreen>
                         Text(
                           group.name,
                           style: const TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.black,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
@@ -538,7 +538,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
         const Text(
           'Squad details',
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.black,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -547,7 +547,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
         TextField(
           controller: _nameController,
           autofocus: true,
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
           decoration: InputDecoration(
             hintText: 'Squad name',
             hintStyle: const TextStyle(color: AppColors.grey),
@@ -612,7 +612,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
         Text(
           'Add members',
           style: const TextStyle(
-            color: AppColors.white,
+            color: AppColors.black,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -632,7 +632,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
                 child: TextField(
                   controller: _memberController,
                   enabled: _canAddMember,
-                  style: const TextStyle(color: AppColors.white),
+                  style: const TextStyle(color: AppColors.black),
                   onSubmitted: (_) => _addMember(),
                   decoration: InputDecoration(
                     hintText: _canAddMember ? 'Rider name' : 'Member limit hit',
@@ -698,7 +698,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
         const Text(
           'Positions',
           style: TextStyle(
-            color: AppColors.white,
+            color: AppColors.black,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -821,7 +821,7 @@ class _KindChoice extends StatelessWidget {
                 Text(
                   kind.displayName,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -869,7 +869,7 @@ class _MemberPreview extends StatelessWidget {
                 Text(
                   name,
                   style: const TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -916,7 +916,7 @@ class _PositionRow extends StatelessWidget {
             child: Text(
               name,
               style: const TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
@@ -932,7 +932,7 @@ class _PositionRow extends StatelessWidget {
                 value: role,
                 dropdownColor: AppColors.surface,
                 iconEnabledColor: AppColors.orange,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 items: RiderRole.values
                     .where((role) => role != RiderRole.leader)
                     .map(

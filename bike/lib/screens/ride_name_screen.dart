@@ -60,7 +60,7 @@ class _RideNameScreenState extends State<RideNameScreen> {
             const Text(
               'Give your ride a name',
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
@@ -73,7 +73,7 @@ class _RideNameScreenState extends State<RideNameScreen> {
             const SizedBox(height: 24),
             TextField(
               controller: _nameController,
-              style: const TextStyle(color: AppColors.white),
+              style: const TextStyle(color: AppColors.black),
               decoration: InputDecoration(
                 labelText: 'Trip Name',
                 labelStyle: const TextStyle(color: AppColors.grey),

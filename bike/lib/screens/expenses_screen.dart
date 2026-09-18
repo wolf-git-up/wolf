@@ -178,7 +178,7 @@ class ExpensesScreen extends StatelessWidget {
               const Text(
                 'Each Ride',
                 style: TextStyle(
-                  color: AppColors.white,
+                  color: AppColors.black,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
@@ -257,7 +257,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   const Text(
                     'Select Ride',
                     style: TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -287,7 +287,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   const Text(
                     'Expense Details',
                     style: TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -406,7 +406,7 @@ class RideExpenseCard extends StatelessWidget {
                   Text(
                     ride.rideName,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -457,7 +457,7 @@ void showRideExpenseDetails(BuildContext context, RideExpense ride) {
                   child: Text(
                     ride.rideName,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                     ),
@@ -519,7 +519,7 @@ class _ExpenseSummaryCard extends StatelessWidget {
                 const Text(
                   'Total Ride Spend',
                   style: TextStyle(
-                    color: AppColors.white,
+                    color: AppColors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -574,7 +574,7 @@ class _ExpenseBreakdownRow extends StatelessWidget {
             child: Text(
               item.label,
               style: const TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),

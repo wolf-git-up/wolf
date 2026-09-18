@@ -29,7 +29,7 @@ class RideTypeScreen extends StatelessWidget {
             const Text(
               'Select Ride Type',
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
@@ -144,7 +144,7 @@ class _RideTypeCard extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),

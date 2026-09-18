@@ -57,7 +57,7 @@ class RiderAvatar extends StatelessWidget {
             child: Text(
               rider.avatarInitials,
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: size * 0.33,
                 fontWeight: FontWeight.w700,
               ),
@@ -210,7 +210,7 @@ class FormationSlot extends StatelessWidget {
         Text(
           rider.name.split(' ').first,
           style: const TextStyle(
-            color: AppColors.white,
+            color: AppColors.black,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),
