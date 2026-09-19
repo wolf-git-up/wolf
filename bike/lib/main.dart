@@ -9,6 +9,7 @@ import 'screens/ride_name_screen.dart';
 import 'screens/squad_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/stats_screen.dart';
+import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -36,7 +37,7 @@ class BikeSquadApp extends StatelessWidget {
       title: 'Bike Squad',
       debugShowCheckedModeBanner: false,
       theme: appTheme.themeData,
-      home: const MainShell(),
+      home: const SplashScreen(),
     );
   }
 }
