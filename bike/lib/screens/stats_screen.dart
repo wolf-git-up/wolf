@@ -31,16 +31,16 @@ class _StatsScreenState extends State<StatsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Ride Statistics'),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.themedBackground,
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.orange,
           labelColor: AppColors.orange,
-          unselectedLabelColor: AppColors.grey,
+          unselectedLabelColor: AppColors.themedGrey,
           tabs: const [
             Tab(text: 'Groups Led'),
             Tab(text: 'Ride Stats'),
@@ -75,16 +75,16 @@ class _GroupsLedTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.trending_up_outlined,
                   size: 64,
-                  color: AppColors.grey,
+                  color: AppColors.themedGrey,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No rides recorded yet',
                   style: TextStyle(
-                    color: AppColors.grey,
+                    color: AppColors.themedGrey,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -196,16 +196,16 @@ class _RideStatsTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.bar_chart_outlined,
                   size: 64,
-                  color: AppColors.grey,
+                  color: AppColors.themedGrey,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No group statistics available',
                   style: TextStyle(
-                    color: AppColors.grey,
+                    color: AppColors.themedGrey,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -246,16 +246,16 @@ class _LeadershipTab extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.groups_outlined,
                   size: 64,
-                  color: AppColors.grey,
+                  color: AppColors.themedGrey,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'No leadership data available',
                   style: TextStyle(
-                    color: AppColors.grey,
+                    color: AppColors.themedGrey,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
@@ -293,7 +293,7 @@ class _StatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.orange, width: 1),
       ),
@@ -339,7 +339,7 @@ class _StatRow extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(color: AppColors.black, fontSize: 14),
+              style: TextStyle(color: AppColors.themedText, fontSize: 14),
             ),
           ],
         ),
@@ -379,9 +379,12 @@ class _GroupStatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.orange.withOpacity(0.5), width: 1),
+        border: Border.all(
+          color: AppColors.orange.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,9 +416,9 @@ class _GroupStatsCard extends StatelessWidget {
           ),
           if (roleDistribution.isNotEmpty) ...[
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Role Distribution:',
-              style: TextStyle(color: AppColors.grey, fontSize: 12),
+              style: TextStyle(color: AppColors.themedGrey, fontSize: 12),
             ),
             const SizedBox(height: 6),
             ...roleDistribution.entries.map((e) {
@@ -423,7 +426,7 @@ class _GroupStatsCard extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   '${e.key.displayName}: ${e.value}',
-                  style: const TextStyle(color: AppColors.black, fontSize: 12),
+                  style: TextStyle(color: AppColors.themedText, fontSize: 12),
                 ),
               );
             }),
@@ -448,12 +451,12 @@ class _MiniStatRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppColors.grey, fontSize: 13),
+          style: TextStyle(color: AppColors.themedGrey, fontSize: 13),
         ),
         Text(
           value,
-          style: const TextStyle(
-            color: AppColors.black,
+          style: TextStyle(
+            color: AppColors.themedText,
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),
@@ -474,7 +477,7 @@ class _GroupDetailCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.orange, width: 1),
       ),
@@ -542,8 +545,8 @@ class _GroupDetailCard extends StatelessWidget {
                       children: [
                         Text(
                           '${entry.key.emoji} ${entry.key.displayName}',
-                          style: const TextStyle(
-                            color: AppColors.black,
+                          style: TextStyle(
+                            color: AppColors.themedText,
                             fontSize: 13,
                           ),
                         ),
@@ -563,7 +566,9 @@ class _GroupDetailCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: percentage / 100,
                         minHeight: 6,
-                        backgroundColor: AppColors.grey.withOpacity(0.3),
+                        backgroundColor: AppColors.themedGrey.withValues(
+                          alpha: 0.3,
+                        ),
                         valueColor: const AlwaysStoppedAnimation(
                           AppColors.orange,
                         ),
@@ -596,7 +601,7 @@ class _LeadershipCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.orange, width: 1),
       ),
@@ -689,8 +694,8 @@ class _LeadershipStatBar extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
-                color: AppColors.black,
+              style: TextStyle(
+                color: AppColors.themedText,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -711,7 +716,7 @@ class _LeadershipStatBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: percentage / 100,
             minHeight: 12,
-            backgroundColor: AppColors.grey.withOpacity(0.2),
+            backgroundColor: AppColors.themedGrey.withValues(alpha: 0.2),
             valueColor: const AlwaysStoppedAnimation(AppColors.orange),
           ),
         ),

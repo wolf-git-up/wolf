@@ -45,7 +45,9 @@ class _SquadScreenState extends State<SquadScreen>
     );
 
     if (!mounted || groupId == null) return;
-    final group = squadProvider.groups.firstWhere((group) => group.id == groupId);
+    final group = squadProvider.groups.firstWhere(
+      (group) => group.id == groupId,
+    );
     squadProvider.setActiveGroup(group);
     Navigator.push(
       context,
@@ -63,7 +65,7 @@ class _SquadScreenState extends State<SquadScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: Colors.red, width: 1.2),
@@ -74,14 +76,14 @@ class _SquadScreenState extends State<SquadScreen>
         ),
         content: Text(
           'Are you sure you want to delete "$groupName"? This action cannot be undone.',
-          style: const TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
@@ -111,7 +113,7 @@ class _SquadScreenState extends State<SquadScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Squad'),
         actions: [
@@ -156,7 +158,7 @@ class _SquadScreenState extends State<SquadScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openCreateGroupFlow(context),
         backgroundColor: AppColors.orange,
-        foregroundColor: Colors.black,
+        foregroundColor: AppColors.themedText,
         icon: const Icon(Icons.group_add),
         label: const Text(
           'New Group',
@@ -186,26 +188,26 @@ class _SquadScreenState extends State<SquadScreen>
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'No Groups Yet',
             style: TextStyle(
-              color: AppColors.black,
+              color: AppColors.themedText,
               fontSize: 22,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Create a group to manage your\nrider formation',
             textAlign: TextAlign.center,
-            style: TextStyle(color: AppColors.grey, fontSize: 14),
+            style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () => _openCreateGroupFlow(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -282,16 +284,16 @@ class _SquadScreenState extends State<SquadScreen>
                       children: [
                         Text(
                           group.name,
-                          style: const TextStyle(
-                            color: AppColors.black,
+                          style: TextStyle(
+                            color: AppColors.themedText,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
                           '${group.kind.displayName} - ${group.members.length} rider${group.members.length != 1 ? 's' : ''}',
-                          style: const TextStyle(
-                            color: AppColors.grey,
+                          style: TextStyle(
+                            color: AppColors.themedGrey,
                             fontSize: 13,
                           ),
                         ),
@@ -308,7 +310,7 @@ class _SquadScreenState extends State<SquadScreen>
                         color: AppColors.orangeGlow,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.orange.withOpacity(0.5),
+                          color: AppColors.orange.withValues(alpha: 0.5),
                         ),
                       ),
                       child: const Text(
@@ -322,12 +324,12 @@ class _SquadScreenState extends State<SquadScreen>
                       ),
                     ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.chevron_right, color: AppColors.grey),
+                  Icon(Icons.chevron_right, color: AppColors.themedGrey),
                 ],
               ),
               if (group.members.length > 1) ...[
                 const SizedBox(height: 14),
-                const Divider(color: AppColors.greyDark, height: 1),
+                Divider(color: AppColors.themedGreyBorder, height: 1),
                 const SizedBox(height: 12),
                 // Member avatar row
                 SizedBox(
@@ -351,7 +353,7 @@ class _SquadScreenState extends State<SquadScreen>
                             height: 36,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColors.greyDark,
+                              color: AppColors.themedGreyBorder,
                               border: Border.all(
                                 color: AppColors.orange,
                                 width: 1.5,
@@ -427,7 +429,9 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
       _members.add(
         _DraftMember(
           name: name,
-          role: _kind == SquadKind.duo ? RiderRole.coLeader : RiderRole.midRider,
+          role: _kind == SquadKind.duo
+              ? RiderRole.coLeader
+              : RiderRole.midRider,
         ),
       );
       _memberController.clear();
@@ -445,7 +449,9 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
       name: _nameController.text.trim(),
       kind: _kind,
       members: _members
-          .map((member) => SquadMemberSetup(name: member.name, role: member.role))
+          .map(
+            (member) => SquadMemberSetup(name: member.name, role: member.role),
+          )
           .toList(),
     );
     Navigator.pop(context, group.id);
@@ -462,7 +468,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('New Squad'),
         leading: IconButton(
@@ -491,8 +497,8 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
                     child: OutlinedButton(
                       onPressed: _goBack,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.grey,
-                        side: const BorderSide(color: AppColors.greyDark),
+                        foregroundColor: AppColors.themedGrey,
+                        side: BorderSide(color: AppColors.themedGreyBorder),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(_step == 0 ? 'Cancel' : 'Back'),
@@ -504,7 +510,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
                       onPressed: _goNext,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.orange,
-                        foregroundColor: Colors.black,
+                        foregroundColor: AppColors.themedText,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: Text(_step == 2 ? 'Create' : 'Next'),
@@ -535,10 +541,10 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
       key: const ValueKey('type-step'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Squad details',
           style: TextStyle(
-            color: AppColors.black,
+            color: AppColors.themedText,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -547,16 +553,16 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
         TextField(
           controller: _nameController,
           autofocus: true,
-          style: const TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
           decoration: InputDecoration(
             hintText: 'Squad name',
-            hintStyle: const TextStyle(color: AppColors.grey),
+            hintStyle: TextStyle(color: AppColors.themedGrey),
             prefixIcon: const Icon(Icons.edit, color: AppColors.orange),
             filled: true,
-            fillColor: AppColors.card,
+            fillColor: AppColors.themedCard,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: const BorderSide(color: AppColors.greyDark),
+              borderSide: BorderSide(color: AppColors.themedGreyBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -611,8 +617,8 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
       children: [
         Text(
           'Add members',
-          style: const TextStyle(
-            color: AppColors.black,
+          style: TextStyle(
+            color: AppColors.themedText,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
@@ -622,7 +628,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
           _kind == SquadKind.solo
               ? 'Solo squads only include you.'
               : memberCountText,
-          style: const TextStyle(color: AppColors.grey, fontSize: 14),
+          style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
         ),
         const SizedBox(height: 16),
         if (_kind != SquadKind.solo)
@@ -632,16 +638,16 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
                 child: TextField(
                   controller: _memberController,
                   enabled: _canAddMember,
-                  style: const TextStyle(color: AppColors.black),
+                  style: TextStyle(color: AppColors.themedText),
                   onSubmitted: (_) => _addMember(),
                   decoration: InputDecoration(
                     hintText: _canAddMember ? 'Rider name' : 'Member limit hit',
-                    hintStyle: const TextStyle(color: AppColors.grey),
+                    hintStyle: TextStyle(color: AppColors.themedGrey),
                     filled: true,
-                    fillColor: AppColors.card,
+                    fillColor: AppColors.themedCard,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: AppColors.greyDark),
+                      borderSide: BorderSide(color: AppColors.themedGreyBorder),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -661,7 +667,7 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
                   onPressed: _canAddMember ? _addMember : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.orange,
-                    foregroundColor: Colors.black,
+                    foregroundColor: AppColors.themedText,
                     padding: EdgeInsets.zero,
                   ),
                   child: const Icon(Icons.add),
@@ -695,18 +701,18 @@ class _SquadCreationScreenState extends State<_SquadCreationScreen> {
       key: const ValueKey('positions-step'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Positions',
           style: TextStyle(
-            color: AppColors.black,
+            color: AppColors.themedText,
             fontSize: 22,
             fontWeight: FontWeight.w800,
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
+        Text(
           'Choose how each rider sits in the formation.',
-          style: TextStyle(color: AppColors.grey, fontSize: 14),
+          style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
         ),
         const SizedBox(height: 16),
         _PositionRow(
@@ -759,7 +765,9 @@ class _StepHeader extends StatelessWidget {
                   Container(
                     height: 4,
                     decoration: BoxDecoration(
-                      color: i <= step ? AppColors.orange : AppColors.greyDark,
+                      color: i <= step
+                          ? AppColors.orange
+                          : AppColors.themedGreyBorder,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -767,7 +775,9 @@ class _StepHeader extends StatelessWidget {
                   Text(
                     labels[i],
                     style: TextStyle(
-                      color: i == step ? AppColors.orange : AppColors.grey,
+                      color: i == step
+                          ? AppColors.orange
+                          : AppColors.themedGrey,
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                     ),
@@ -800,7 +810,7 @@ class _KindChoice extends StatelessWidget {
   Widget build(BuildContext context) {
     return OrangeCard(
       onTap: onTap,
-      borderColor: selected ? AppColors.orange : AppColors.greyDark,
+      borderColor: selected ? AppColors.orange : AppColors.themedGreyBorder,
       padding: const EdgeInsets.all(14),
       child: Row(
         children: [
@@ -808,7 +818,9 @@ class _KindChoice extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: selected ? AppColors.orangeGlow : AppColors.greyDark,
+              color: selected
+                  ? AppColors.orangeGlow
+                  : AppColors.themedGreyBorder,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.orange, size: 22),
@@ -820,8 +832,8 @@ class _KindChoice extends StatelessWidget {
               children: [
                 Text(
                   kind.displayName,
-                  style: const TextStyle(
-                    color: AppColors.black,
+                  style: TextStyle(
+                    color: AppColors.themedText,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                   ),
@@ -829,14 +841,14 @@ class _KindChoice extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   kind.description,
-                  style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                  style: TextStyle(color: AppColors.themedGrey, fontSize: 12),
                 ),
               ],
             ),
           ),
           Icon(
             selected ? Icons.radio_button_checked : Icons.radio_button_off,
-            color: selected ? AppColors.orange : AppColors.grey,
+            color: selected ? AppColors.orange : AppColors.themedGrey,
           ),
         ],
       ),
@@ -858,7 +870,7 @@ class _MemberPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrangeCard(
-      borderColor: AppColors.greyDark,
+      borderColor: AppColors.themedGreyBorder,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
@@ -868,8 +880,8 @@ class _MemberPreview extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
-                    color: AppColors.black,
+                  style: TextStyle(
+                    color: AppColors.themedText,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -883,7 +895,7 @@ class _MemberPreview extends StatelessWidget {
           if (onRemove != null)
             IconButton(
               onPressed: onRemove,
-              icon: const Icon(Icons.close, color: AppColors.grey),
+              icon: Icon(Icons.close, color: AppColors.themedGrey),
               tooltip: 'Remove',
             ),
         ],
@@ -908,15 +920,15 @@ class _PositionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OrangeCard(
-      borderColor: locked ? AppColors.orange : AppColors.greyDark,
+      borderColor: locked ? AppColors.orange : AppColors.themedGreyBorder,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                color: AppColors.black,
+              style: TextStyle(
+                color: AppColors.themedText,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
@@ -930,9 +942,9 @@ class _PositionRow extends StatelessWidget {
             DropdownButtonHideUnderline(
               child: DropdownButton<RiderRole>(
                 value: role,
-                dropdownColor: AppColors.surface,
+                dropdownColor: AppColors.themedSurface,
                 iconEnabledColor: AppColors.orange,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 items: RiderRole.values
                     .where((role) => role != RiderRole.leader)
                     .map(

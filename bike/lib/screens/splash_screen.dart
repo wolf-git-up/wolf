@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../main.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -40,11 +43,11 @@ class _SplashScreenState extends State<SplashScreen>
   final AudioPlayer _audioPlayer = AudioPlayer();
 
   // ─── Theme Colors ────────────────────────────────────────────────────────
-  static const Color _bgColor    = Color(0xFF111111); // 20% Black
+  static const Color _bgColor = Color(0xFF111111); // 20% Black
   static const Color _primaryRed = Color(0xFFE63946); // 20% Red  — hero
-  static const Color _accentRed  = Color(0xFFFF6B6B); // Lighter red glow
-  static const Color _white      = Color(0xFFFFFFFF); // 50% White — text / icon
-  static const Color _dimWhite   = Color(0xAAFFFFFF); // Tagline
+  static const Color _accentRed = Color(0xFFFF6B6B); // Lighter red glow
+  static const Color _white = Color(0xFFFFFFFF); // 50% White — text / icon
+  static const Color _dimWhite = Color(0xAAFFFFFF); // Tagline
 
   @override
   void initState() {
@@ -68,8 +71,10 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
     _logoFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController,
-          curve: const Interval(0.0, 0.4, curve: Curves.easeIn)),
+      CurvedAnimation(
+        parent: _logoController,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+      ),
     );
 
     // 3. App name slide up (start at 600ms)
@@ -77,15 +82,14 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
-    _textFade = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
-    _textSlide = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
-    );
+    _textFade = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
+    _textSlide = Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _textController, curve: Curves.easeOutCubic),
+        );
 
     // 4. Tagline fade (start at 900ms after logo)
     _taglineController = AnimationController(
@@ -101,12 +105,16 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1600),
     );
-    _bikeSlide = Tween<Offset>(
-      begin: const Offset(-3.0, 0.0),
-      end: const Offset(3.5, 0.0),
-    ).animate(
-      CurvedAnimation(parent: _bikeController, curve: Curves.easeInOutCubic),
-    );
+    _bikeSlide =
+        Tween<Offset>(
+          begin: const Offset(-3.0, 0.0),
+          end: const Offset(3.5, 0.0),
+        ).animate(
+          CurvedAnimation(
+            parent: _bikeController,
+            curve: Curves.easeInOutCubic,
+          ),
+        );
 
     _startSequence();
   }
@@ -136,15 +144,21 @@ class _SplashScreenState extends State<SplashScreen>
     } catch (_) {}
     _bikeController.forward();
 
-    // Navigate to Login after bike finishes
-    Timer(const Duration(milliseconds: 2000), () {
+    // Navigate after bike finishes based on login status
+    Timer(const Duration(milliseconds: 2000), () async {
       if (mounted) {
+        final authProvider = context.read<AuthProvider>();
+        final isLoggedIn = await authProvider.checkLoginStatus();
+        if (!mounted) return;
+        final targetScreen = isLoggedIn
+            ? const MainShell()
+            : const LoginScreen();
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 700),
-            pageBuilder: (_, __, ___) => const LoginScreen(),
-            transitionsBuilder: (_, anim, __, child) =>
+            pageBuilder: (_, _, _) => targetScreen,
+            transitionsBuilder: (_, anim, _, child) =>
                 FadeTransition(opacity: anim, child: child),
           ),
         );
@@ -187,7 +201,7 @@ class _SplashScreenState extends State<SplashScreen>
                 // Solid glowing circle + icon
                 AnimatedBuilder(
                   animation: _logoController,
-                  builder: (_, __) {
+                  builder: (_, _) {
                     return FadeTransition(
                       opacity: _logoFade,
                       child: ScaleTransition(
@@ -200,21 +214,22 @@ class _SplashScreenState extends State<SplashScreen>
                             color: _primaryRed,
                             boxShadow: [
                               BoxShadow(
-                                color: _primaryRed.withOpacity(0.55),
+                                color: _primaryRed.withValues(alpha: 0.55),
                                 blurRadius: 50,
                                 spreadRadius: 6,
                               ),
                               BoxShadow(
-                                color: _accentRed.withOpacity(0.25),
+                                color: _accentRed.withValues(alpha: 0.25),
                                 blurRadius: 100,
                                 spreadRadius: 20,
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.motorcycle,
-                            size: 88,
-                            color: _white,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/logo.jpg',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
@@ -229,10 +244,7 @@ class _SplashScreenState extends State<SplashScreen>
                   animation: _textController,
                   builder: (_, child) => FadeTransition(
                     opacity: _textFade,
-                    child: SlideTransition(
-                      position: _textSlide,
-                      child: child,
-                    ),
+                    child: SlideTransition(position: _textSlide, child: child),
                   ),
                   child: Column(
                     children: [
@@ -246,7 +258,7 @@ class _SplashScreenState extends State<SplashScreen>
                           color: _white,
                           shadows: [
                             Shadow(
-                              color: _primaryRed.withOpacity(0.6),
+                              color: _primaryRed.withValues(alpha: 0.6),
                               offset: const Offset(0, 4),
                               blurRadius: 14,
                             ),
@@ -296,7 +308,7 @@ class _SplashScreenState extends State<SplashScreen>
             right: 0,
             child: AnimatedBuilder(
               animation: _bikeController,
-              builder: (_, __) {
+              builder: (_, _) {
                 return FractionalTranslation(
                   translation: _bikeSlide.value,
                   child: Row(
@@ -310,7 +322,7 @@ class _SplashScreenState extends State<SplashScreen>
                           gradient: LinearGradient(
                             colors: [
                               Colors.transparent,
-                              _primaryRed.withOpacity(0.6),
+                              _primaryRed.withValues(alpha: 0.6),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(4),
@@ -325,7 +337,7 @@ class _SplashScreenState extends State<SplashScreen>
                           color: _primaryRed,
                           shadows: [
                             Shadow(
-                              color: _primaryRed.withOpacity(0.8),
+                              color: _primaryRed.withValues(alpha: 0.8),
                               blurRadius: 20,
                             ),
                           ],
@@ -356,15 +368,18 @@ class _SplashScreenState extends State<SplashScreen>
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 1.5,
-                      color: _white.withOpacity(0.85),
+                      color: _white.withValues(alpha: 0.85),
                     ),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(width: 30, height: 1.5,
-                          color: _primaryRed.withOpacity(0.7)),
+                      Container(
+                        width: 30,
+                        height: 1.5,
+                        color: _primaryRed.withValues(alpha: 0.7),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'BIKE SQUAD',
@@ -376,8 +391,11 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Container(width: 30, height: 1.5,
-                          color: _primaryRed.withOpacity(0.7)),
+                      Container(
+                        width: 30,
+                        height: 1.5,
+                        color: _primaryRed.withValues(alpha: 0.7),
+                      ),
                     ],
                   ),
                 ],
@@ -394,11 +412,7 @@ class _SplashScreenState extends State<SplashScreen>
               height: 4,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.transparent,
-                    _primaryRed,
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.transparent, _primaryRed, Colors.transparent],
                 ),
               ),
             ),

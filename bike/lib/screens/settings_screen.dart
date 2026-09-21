@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../theme/app_theme.dart';
+import '../providers/auth_provider.dart';
+import '../theme/app_theme.dart';
+import 'login_screen.dart';
 import 'profile_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -67,14 +69,14 @@ class SettingsScreen extends StatelessWidget {
               icon: Icons.language_outlined,
               title: 'Language',
               subtitle: 'English',
-              trailing: const Icon(Icons.chevron_right, color: AppColors.grey),
+              trailing: Icon(Icons.chevron_right, color: AppColors.themedGrey),
               onTap: () {},
             ),
             _SettingsTile(
               icon: Icons.location_on_outlined,
               title: 'Default Location',
               subtitle: 'Chennai, Tamil Nadu',
-              trailing: const Icon(Icons.chevron_right, color: AppColors.grey),
+              trailing: Icon(Icons.chevron_right, color: AppColors.themedGrey),
               onTap: () {},
             ),
 
@@ -113,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
                     _showLogoutDialog(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.withOpacity(0.15),
+                    backgroundColor: Colors.red.withValues(alpha: 0.15),
                     foregroundColor: Colors.red,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -150,16 +152,16 @@ class SettingsScreen extends StatelessWidget {
           'Logout',
           style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to logout?',
-          style: TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
@@ -170,9 +172,15 @@ class SettingsScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              // Add logout logic here
+              await context.read<AuthProvider>().logout();
+              if (!context.mounted) return;
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
             },
             child: const Text(
               'Logout',
@@ -251,7 +259,6 @@ class _SettingsTile extends StatelessWidget {
                     Text(
                       title,
                       style: const TextStyle(
-                        color: AppColors.black,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),
@@ -259,16 +266,15 @@ class _SettingsTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        color: AppColors.grey,
+                      style: TextStyle(
+                        color: AppColors.themedGrey,
                         fontSize: 13,
                       ),
                     ),
                   ],
                 ),
               ),
-              trailing ??
-                  const Icon(Icons.chevron_right, color: AppColors.grey),
+              trailing ?? const Icon(Icons.chevron_right),
             ],
           ),
         ),

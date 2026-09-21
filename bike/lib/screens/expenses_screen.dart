@@ -142,10 +142,10 @@ class ExpensesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Ride Expenses'),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.themedBackground,
         actions: [
           IconButton(
             tooltip: 'Add expense',
@@ -175,10 +175,10 @@ class ExpensesScreen extends StatelessWidget {
                 ridesCount: rides.length,
               ),
               const SizedBox(height: 18),
-              const Text(
+              Text(
                 'Each Ride',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
@@ -242,10 +242,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       valueListenable: rideExpensesNotifier,
       builder: (context, rides, _) {
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.themedBackground,
           appBar: AppBar(
             title: const Text('Add Expense'),
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.themedBackground,
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -254,10 +254,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Select Ride',
                     style: TextStyle(
-                      color: AppColors.black,
+                      color: AppColors.themedText,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -265,7 +265,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedRideName,
-                    dropdownColor: AppColors.surface,
+                    dropdownColor: AppColors.themedSurface,
                     decoration: _fieldDecoration('Ride'),
                     items: rides
                         .map(
@@ -284,10 +284,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         value == null ? 'Please select a ride' : null,
                   ),
                   const SizedBox(height: 18),
-                  const Text(
+                  Text(
                     'Expense Details',
                     style: TextStyle(
-                      color: AppColors.black,
+                      color: AppColors.themedText,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -348,10 +348,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       labelText: label,
       labelStyle: const TextStyle(color: Color.fromARGB(255, 190, 190, 190)),
       filled: true,
-      fillColor: AppColors.card,
+      fillColor: AppColors.themedCard,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: AppColors.greyDark),
+        borderSide: BorderSide(color: AppColors.themedGreyBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -383,9 +383,9 @@ class RideExpenseCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.greyDark, width: 1),
+          border: Border.all(color: AppColors.themedGreyBorder, width: 1),
         ),
         child: Row(
           children: [
@@ -405,8 +405,8 @@ class RideExpenseCard extends StatelessWidget {
                 children: [
                   Text(
                     ride.rideName,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -440,7 +440,7 @@ class RideExpenseCard extends StatelessWidget {
 void showRideExpenseDetails(BuildContext context, RideExpense ride) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: AppColors.surface,
+    backgroundColor: AppColors.themedSurface,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
     ),
@@ -456,8 +456,8 @@ void showRideExpenseDetails(BuildContext context, RideExpense ride) {
                 Expanded(
                   child: Text(
                     ride.rideName,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                     ),
@@ -504,7 +504,7 @@ class _ExpenseSummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.orange, width: 1.2),
       ),
@@ -516,10 +516,10 @@ class _ExpenseSummaryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Total Ride Spend',
                   style: TextStyle(
-                    color: AppColors.black,
+                    color: AppColors.themedText,
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -573,8 +573,8 @@ class _ExpenseBreakdownRow extends StatelessWidget {
           Expanded(
             child: Text(
               item.label,
-              style: const TextStyle(
-                color: AppColors.black,
+              style: TextStyle(
+                color: AppColors.themedText,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),

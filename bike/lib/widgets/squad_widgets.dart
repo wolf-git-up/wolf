@@ -40,14 +40,14 @@ class RiderAvatar extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.greyDark,
+            color: AppColors.themedGreyBorder,
             border: Border.all(
               color: _roleColor(rider.role),
               width: rider.isCurrentUser ? 2.5 : 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: _roleColor(rider.role).withOpacity(0.3),
+                color: _roleColor(rider.role).withValues(alpha: 0.3),
                 blurRadius: 8,
                 spreadRadius: 1,
               ),
@@ -57,7 +57,7 @@ class RiderAvatar extends StatelessWidget {
             child: Text(
               rider.avatarInitials,
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: size * 0.33,
                 fontWeight: FontWeight.w700,
               ),
@@ -73,12 +73,15 @@ class RiderAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _roleColor(rider.role),
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.background, width: 1.5),
+                border: Border.all(
+                  color: AppColors.themedBackground,
+                  width: 1.5,
+                ),
               ),
               child: Text(
                 rider.role.positionTag,
-                style: const TextStyle(
-                  color: Colors.black,
+                style: TextStyle(
+                  color: AppColors.themedText,
                   fontSize: 8,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0.5,
@@ -113,12 +116,12 @@ class OrangeCard extends StatelessWidget {
       child: Container(
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor ?? AppColors.white, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: (borderColor ?? AppColors.white).withOpacity(0.08),
+              color: (borderColor ?? AppColors.white).withValues(alpha: 0.08),
               blurRadius: 12,
               spreadRadius: 0,
             ),
@@ -160,9 +163,9 @@ class RoleChip extends StatelessWidget {
         vertical: compact ? 3 : 5,
       ),
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.12),
+        color: _color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _color.withOpacity(0.6), width: 1),
+        border: Border.all(color: _color.withValues(alpha: 0.6), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -198,8 +201,8 @@ class FormationSlot extends StatelessWidget {
       children: [
         Text(
           '#$position',
-          style: const TextStyle(
-            color: AppColors.grey,
+          style: TextStyle(
+            color: AppColors.themedGrey,
             fontSize: 10,
             fontWeight: FontWeight.w600,
           ),
@@ -209,8 +212,8 @@ class FormationSlot extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           rider.name.split(' ').first,
-          style: const TextStyle(
-            color: AppColors.black,
+          style: TextStyle(
+            color: AppColors.themedText,
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),

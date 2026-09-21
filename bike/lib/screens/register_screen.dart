@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/user_model.dart';
+import '../models/bike_model.dart';
+import '../providers/auth_provider.dart';
+import '../providers/bike_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_header.dart';
-import '../main.dart'; // To access MainShell
+import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,6 +18,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   
   // Bike details controllers
@@ -25,10 +31,116 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   String _bikeStatus = 'Don\'t have bike'; // Default selection
 
-  void _register() {
+  void _register() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all mandatory personal details (Name, Email, Phone, Password).'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    if (!email.contains('@') || !email.contains('.')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters long.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    if (_bikeStatus == 'Have bike') {
+      final brand = _bikeBrandController.text.trim();
+      final model = _bikeModelController.text.trim();
+      final cc = _bikeCcController.text.trim();
+      final year = _bikeYearController.text.trim();
+      final reg = _bikeRegistrationController.text.trim();
+
+      if (brand.isEmpty || model.isEmpty || cc.isEmpty || year.isEmpty || reg.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please fill in all mandatory bike specifications.'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+    }
+
+    final newUser = UserModel(
+      name: name,
+      email: email,
+      phone: phone,
+      password: password,
+      bikeStatus: _bikeStatus,
+      bikeBrand: _bikeStatus == 'Have bike' ? _bikeBrandController.text.trim() : null,
+      bikeModel: _bikeStatus == 'Have bike' ? _bikeModelController.text.trim() : null,
+      bikeCc: _bikeStatus == 'Have bike' ? _bikeCcController.text.trim() : null,
+      bikeYear: _bikeStatus == 'Have bike' ? _bikeYearController.text.trim() : null,
+      bikeRegistration: _bikeStatus == 'Have bike' ? _bikeRegistrationController.text.trim() : null,
+    );
+
+    // Save user to AuthProvider
+    await context.read<AuthProvider>().registerUser(newUser);
+
+    // Add bike to BikeProvider if user registered a bike
+    if (_bikeStatus == 'Have bike' && mounted) {
+      final bikeBrandText = _bikeBrandController.text.trim();
+      final bikeModelText = _bikeModelController.text.trim();
+      context.read<BikeProvider>().addBike(
+        Bike(
+          id: 'bike_${DateTime.now().millisecondsSinceEpoch}',
+          name: '$bikeBrandText $bikeModelText',
+          brand: BikeBrand.heroMotoCorp,
+          model: bikeModelText,
+          yearOfPurchase: int.tryParse(_bikeYearController.text.trim()) ?? 2023,
+          licensePlate: _bikeRegistrationController.text.trim(),
+          color: 'Red & Black',
+          engineCapacity: double.tryParse(_bikeCcController.text.trim()) ?? 150.0,
+        ),
+      );
+    }
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Registration successful for $name! Please sign in to continue.'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const MainShell()),
+      MaterialPageRoute(
+        builder: (context) => LoginScreen(
+          prefilledEmail: email,
+          prefilledPassword: password,
+        ),
+      ),
       (route) => false,
     );
   }
@@ -37,6 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _bikeBrandController.dispose();
     _bikeModelController.dispose();
@@ -119,18 +232,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   _buildTextField(
                     controller: _nameController,
-                    label: 'Full Name',
+                    label: 'Full Name *',
                     icon: Icons.person_outline,
                   ),
                   _buildTextField(
                     controller: _emailController,
-                    label: 'Email Address',
+                    label: 'Email Address *',
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                   ),
                   _buildTextField(
+                    controller: _phoneController,
+                    label: 'Phone Number *',
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                  ),
+                  _buildTextField(
                     controller: _passwordController,
-                    label: 'Password',
+                    label: 'Password *',
                     icon: Icons.lock_outline,
                     obscureText: _obscurePassword,
                     suffixIcon: IconButton(
@@ -215,12 +334,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 16),
                     _buildTextField(
                       controller: _bikeBrandController,
-                      label: 'Bike Brand (e.g., Yamaha, Honda)',
+                      label: 'Bike Brand * (e.g., Yamaha, Honda)',
                       icon: Icons.motorcycle,
                     ),
                     _buildTextField(
                       controller: _bikeModelController,
-                      label: 'Bike Model (e.g., R15, CBR 250R)',
+                      label: 'Bike Model * (e.g., R15, CBR 250R)',
                       icon: Icons.speed,
                     ),
                     Row(
@@ -228,7 +347,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Expanded(
                           child: _buildTextField(
                             controller: _bikeCcController,
-                            label: 'Engine CC',
+                            label: 'Engine CC *',
                             icon: Icons.flash_on,
                             keyboardType: TextInputType.number,
                           ),
@@ -237,7 +356,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         Expanded(
                           child: _buildTextField(
                             controller: _bikeYearController,
-                            label: 'Year',
+                            label: 'Year *',
                             icon: Icons.calendar_today,
                             keyboardType: TextInputType.number,
                           ),
@@ -246,7 +365,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     _buildTextField(
                       controller: _bikeRegistrationController,
-                      label: 'Registration Number',
+                      label: 'Registration Number *',
                       icon: Icons.confirmation_number_outlined,
                     ),
                   ],
