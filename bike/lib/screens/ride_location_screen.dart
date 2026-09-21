@@ -58,7 +58,7 @@ class _RideLocationScreenState extends State<RideLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Ride Location'),
         leading: IconButton(
@@ -71,10 +71,10 @@ class _RideLocationScreenState extends State<RideLocationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Route',
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
@@ -124,7 +124,7 @@ class _LocationField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: AppColors.black),
+      style: TextStyle(color: AppColors.themedText),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.orange),

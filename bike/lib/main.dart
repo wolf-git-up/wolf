@@ -4,6 +4,7 @@ import 'models/rider_model.dart';
 import 'providers/squad_provider.dart';
 import 'providers/bike_provider.dart';
 import 'providers/ride_provider.dart';
+import 'providers/auth_provider.dart';
 import 'screens/expenses_screen.dart';
 import 'screens/ride_name_screen.dart';
 import 'screens/squad_screen.dart';
@@ -16,6 +17,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => SquadProvider()),
         ChangeNotifierProvider(create: (_) => BikeProvider()),
         ChangeNotifierProvider(create: (_) => RideSetup()),
@@ -89,7 +91,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -102,7 +104,7 @@ class _MainShellState extends State<MainShell> {
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: (i) => setState(() => _selectedIndex = i),
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.themedBackground,
             selectedItemColor: AppColors.orange,
             unselectedItemColor: const Color.fromARGB(255, 247, 241, 241),
             type: BottomNavigationBarType.fixed,
@@ -138,9 +140,9 @@ class _HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
-        title: const Text('Bike Squad', style: TextStyle(color: Colors.black)),
+        title: Text('Bike Squad', style: TextStyle(color: AppColors.themedText)),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -176,11 +178,11 @@ class _HomeScreen extends StatelessWidget {
                 const SizedBox(width: 12),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Welcome buddy 🔥',
                       style: TextStyle(
-                        color: AppColors.black,
+                        color: AppColors.themedText,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -188,7 +190,7 @@ class _HomeScreen extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       '3Bikers Squad',
-                      style: TextStyle(color: AppColors.black, fontSize: 13),
+                      style: TextStyle(color: AppColors.themedText, fontSize: 13),
                     ),
                   ],
                 ),
@@ -202,7 +204,7 @@ class _HomeScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: AppColors.themedCard,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: const Color.fromARGB(255, 255, 255, 255),
@@ -263,7 +265,7 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.play_arrow,
                   title: 'Start Ride',
-                  iconColor: Colors.black,
+                  iconColor: AppColors.themedText,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -277,13 +279,13 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.groups,
                   title: 'Squad',
-                  iconColor: Colors.black,
+                  iconColor: AppColors.themedText,
                   onTap: onSquadTap ?? () {},
                 ),
                 _ActionCard(
                   icon: Icons.currency_rupee,
                   title: 'Expenses',
-                  iconColor: Colors.black,
+                  iconColor: AppColors.themedText,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -294,7 +296,7 @@ class _HomeScreen extends StatelessWidget {
                 _ActionCard(
                   icon: Icons.bar_chart,
                   title: 'Reports',
-                  iconColor: Colors.black,
+                  iconColor: AppColors.themedText,
                   onTap: onReportsTap ?? () {},
                 ),
               ],
@@ -347,7 +349,7 @@ class _RideInfoRow extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(color: AppColors.black, fontSize: 15),
+            style: TextStyle(color: AppColors.themedText, fontSize: 15),
           ),
           Text(
             value,
@@ -455,9 +457,9 @@ class _RideHistoryCard extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.card,
+              color: AppColors.themedCard,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.greyDark, width: 1),
+              border: Border.all(color: AppColors.themedGreyBorder, width: 1),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -468,8 +470,8 @@ class _RideHistoryCard extends StatelessWidget {
                     children: [
                       Text(
                         location,
-                        style: const TextStyle(
-                          color: AppColors.black,
+                        style: TextStyle(
+                          color: AppColors.themedText,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
@@ -543,7 +545,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
     final setup = context.watch<RideSetup>();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(title: const Text('Map')),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -554,13 +556,13 @@ class _MapTabScreenState extends State<MapTabScreen> {
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.map_outlined, color: AppColors.grey, size: 66),
+                  children: [
+                    Icon(Icons.map_outlined, color: AppColors.themedGrey, size: 66),
                     SizedBox(height: 16),
                     Text(
                       'No active ride yet',
                       style: TextStyle(
-                        color: AppColors.black,
+                        color: AppColors.themedText,
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                       ),
@@ -569,7 +571,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                     Text(
                       'Start a ride from the Home tab to see the map here.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.grey, fontSize: 14),
+                      style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
                     ),
                   ],
                 ),
@@ -579,8 +581,8 @@ class _MapTabScreenState extends State<MapTabScreen> {
                 children: [
                   Text(
                     setup.rideName!,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 26,
                       fontWeight: FontWeight.w700,
                     ),
@@ -589,7 +591,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: AppColors.themedCard,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(color: AppColors.blue, width: 1.2),
                     ),
@@ -602,8 +604,8 @@ class _MapTabScreenState extends State<MapTabScreen> {
                             const SizedBox(width: 10),
                             Text(
                               _modeLabel(setup.rideMode),
-                              style: const TextStyle(
-                                color: AppColors.black,
+                              style: TextStyle(
+                                color: AppColors.themedText,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -643,7 +645,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.orange,
-                        foregroundColor: AppColors.background,
+                        foregroundColor: AppColors.themedBackground,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: () async {
@@ -652,7 +654,7 @@ class _MapTabScreenState extends State<MapTabScreen> {
                         final confirmed = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            backgroundColor: AppColors.surface,
+                            backgroundColor: AppColors.themedSurface,
                             title: const Text('End Ride'),
                             content: const Text(
                               'Do you want to end this ride?',
@@ -720,14 +722,14 @@ class _MapInfoRow extends StatelessWidget {
       children: [
         Text(
           '$label:',
-          style: const TextStyle(color: AppColors.grey, fontSize: 14),
+          style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              color: AppColors.black,
+            style: TextStyle(
+              color: AppColors.themedText,
               fontSize: 15,
               fontWeight: FontWeight.w600,
             ),

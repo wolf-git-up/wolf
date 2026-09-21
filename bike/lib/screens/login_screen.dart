@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_header.dart';
 import 'register_screen.dart';
 import '../main.dart'; // To access MainShell
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final String? prefilledEmail;
+  final String? prefilledPassword;
+
+  const LoginScreen({
+    super.key,
+    this.prefilledEmail,
+    this.prefilledPassword,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,7 +25,67 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  void _login() {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.prefilledEmail != null) {
+      _emailController.text = widget.prefilledEmail!;
+    }
+    if (widget.prefilledPassword != null) {
+      _passwordController.text = widget.prefilledPassword!;
+    }
+  }
+
+  void _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter both email and password.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    if (!email.contains('@') || !email.contains('.')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final errorMessage = await authProvider.loginUser(email, password);
+
+    if (!mounted) return;
+
+    if (errorMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Welcome back, ${authProvider.currentUser?.name ?? 'Rider'}! 🔥'),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const MainShell()),
@@ -73,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     style: TextStyle(color: AppColors.themedText),
                     decoration: InputDecoration(
-                      labelText: 'Email Address',
+                      labelText: 'Email Address *',
                       labelStyle: TextStyle(color: AppColors.themedGrey),
                       prefixIcon: const Icon(Icons.email_outlined, color: Color(0xFFE63946)),
                       filled: true,
@@ -100,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _passwordController,
                     style: TextStyle(color: AppColors.themedText),
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Password *',
                       labelStyle: TextStyle(color: AppColors.themedGrey),
                       prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFFE63946)),
                       suffixIcon: IconButton(

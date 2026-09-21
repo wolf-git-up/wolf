@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../main.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -136,14 +139,18 @@ class _SplashScreenState extends State<SplashScreen>
     } catch (_) {}
     _bikeController.forward();
 
-    // Navigate to Login after bike finishes
-    Timer(const Duration(milliseconds: 2000), () {
+    // Navigate after bike finishes based on login status
+    Timer(const Duration(milliseconds: 2000), () async {
       if (mounted) {
+        final authProvider = context.read<AuthProvider>();
+        final isLoggedIn = await authProvider.checkLoginStatus();
+        if (!mounted) return;
+        final targetScreen = isLoggedIn ? const MainShell() : const LoginScreen();
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             transitionDuration: const Duration(milliseconds: 700),
-            pageBuilder: (_, __, ___) => const LoginScreen(),
+            pageBuilder: (_, __, ___) => targetScreen,
             transitionsBuilder: (_, anim, __, child) =>
                 FadeTransition(opacity: anim, child: child),
           ),

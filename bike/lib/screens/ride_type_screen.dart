@@ -13,7 +13,7 @@ class RideTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Start Ride'),
         leading: IconButton(
@@ -26,18 +26,18 @@ class RideTypeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Select Ride Type',
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Choose solo, duo, or squad and continue your ride setup.',
-              style: TextStyle(color: AppColors.grey, fontSize: 14),
+              style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
             ),
             const SizedBox(height: 32),
             _RideTypeCard(
@@ -115,7 +115,7 @@ class _RideTypeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.white, width: 1.2),
           boxShadow: [
@@ -143,8 +143,8 @@ class _RideTypeCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                     ),
@@ -152,7 +152,7 @@ class _RideTypeCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                    style: TextStyle(color: AppColors.themedGrey, fontSize: 12),
                   ),
                 ],
               ),

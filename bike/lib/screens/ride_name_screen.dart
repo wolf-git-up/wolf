@@ -44,7 +44,7 @@ class _RideNameScreenState extends State<RideNameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Trip Name'),
         leading: IconButton(
@@ -57,29 +57,29 @@ class _RideNameScreenState extends State<RideNameScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Give your ride a name',
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'This helps you identify the trip later in the map and ride history.',
-              style: TextStyle(color: AppColors.grey, fontSize: 14),
+              style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
             ),
             const SizedBox(height: 24),
             TextField(
               controller: _nameController,
-              style: const TextStyle(color: AppColors.black),
+              style: TextStyle(color: AppColors.themedText),
               decoration: InputDecoration(
                 labelText: 'Trip Name',
-                labelStyle: const TextStyle(color: AppColors.grey),
+                labelStyle: TextStyle(color: AppColors.themedGrey),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppColors.grey),
+                  borderSide: BorderSide(color: AppColors.themedGrey),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),

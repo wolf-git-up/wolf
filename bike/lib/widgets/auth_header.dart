@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class AuthHeader extends StatelessWidget {
   final String title;
@@ -170,8 +171,8 @@ class AuthHeader extends StatelessWidget {
                     ),
                     child: Container(
                       padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
+                      decoration: BoxDecoration(
+                        color: AppColors.themedText,
                         shape: BoxShape.circle,
                       ),
                       child: ClipOval(
@@ -184,7 +185,7 @@ class AuthHeader extends StatelessWidget {
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
-                                color: Colors.black,
+                                color: AppColors.themedText,
                                 child: const Icon(
                                   Icons.two_wheeler,
                                   size: 70,

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/bike_model.dart';
+import '../models/user_model.dart';
 import '../providers/bike_provider.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 import 'bike_brand_selection_screen.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -30,8 +33,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final currentUser = authProvider.currentUser;
+
+    final displayName = (currentUser?.name.isNotEmpty == true) ? currentUser!.name : userName;
+    final displayEmail = (currentUser?.email.isNotEmpty == true) ? currentUser!.email : userEmail;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Profile'),
         leading: IconButton(
@@ -47,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: AppColors.themedCard,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.orange, width: 1.2),
                 boxShadow: [
@@ -75,17 +84,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    userName,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    displayName,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'user_001',
-                    style: TextStyle(color: AppColors.grey, fontSize: 14),
+                  Text(
+                    displayEmail,
+                    style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -117,10 +126,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
 
             // ─── Profile Information ───────────────────────────────────────────
-            const Text(
+            Text(
               'Profile Information',
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -131,12 +140,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _ProfileInfoTile(
               icon: Icons.email_outlined,
               title: 'Email',
-              value: userEmail,
+              value: displayEmail,
               onTap: () => _showEditFieldDialog(
                 context,
                 'Email',
-                userEmail,
-                (value) => setState(() => userEmail = value),
+                displayEmail,
+                (value) {
+                  setState(() => userEmail = value);
+                  if (currentUser != null) {
+                    context.read<AuthProvider>().updateCurrentUser(
+                      UserModel(
+                        name: currentUser.name,
+                        email: value,
+                        password: currentUser.password,
+                        bikeStatus: currentUser.bikeStatus,
+                        bikeBrand: currentUser.bikeBrand,
+                        bikeModel: currentUser.bikeModel,
+                        bikeCc: currentUser.bikeCc,
+                        bikeYear: currentUser.bikeYear,
+                        bikeRegistration: currentUser.bikeRegistration,
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             const SizedBox(height: 12),
@@ -188,14 +214,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: AppColors.orange,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.add, color: AppColors.background, size: 16),
+                        Icon(Icons.add, color: AppColors.themedBackground, size: 16),
                         SizedBox(width: 4),
                         Text(
                           'Add',
                           style: TextStyle(
-                            color: AppColors.background,
+                            color: AppColors.themedBackground,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -219,16 +245,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       child: Column(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.two_wheeler_outlined,
                             size: 48,
-                            color: AppColors.grey,
+                            color: AppColors.themedGrey,
                           ),
                           const SizedBox(height: 12),
-                          const Text(
+                          Text(
                             'No bikes added yet',
                             style: TextStyle(
-                              color: AppColors.grey,
+                              color: AppColors.themedGrey,
                               fontSize: 14,
                             ),
                           ),
@@ -246,10 +272,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Add Your First Bike',
                               style: TextStyle(
-                                color: AppColors.background,
+                                color: AppColors.themedBackground,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -289,10 +315,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
 
             // ─── Ride Statistics ───────────────────────────────────────────────
-            const Text(
+            Text(
               'Ride Statistics',
               style: TextStyle(
-                color: AppColors.black,
+                color: AppColors.themedText,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -351,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onPressed: () => _showEditProfileDialog(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.orange,
-                  foregroundColor: Colors.black,
+                  foregroundColor: AppColors.themedText,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -370,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showLogoutDialog(context),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.orange,
                   side: const BorderSide(color: AppColors.orange),
@@ -392,12 +418,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.themedSurface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: const BorderSide(color: AppColors.orange, width: 1.2),
+        ),
+        title: const Text(
+          'Logout',
+          style: TextStyle(
+            color: AppColors.orange,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(color: AppColors.themedText),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.themedGrey),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.orange,
+              foregroundColor: AppColors.themedText,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await context.read<AuthProvider>().logout();
+              if (!context.mounted) return;
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showPhoneDialog(BuildContext context) {
     final ctrl = TextEditingController(text: phoneNumber);
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.orange, width: 1.2),
@@ -413,34 +495,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: ctrl,
           autofocus: true,
           keyboardType: TextInputType.phone,
-          style: const TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
           decoration: InputDecoration(
             hintText: 'e.g. +91 98765 43210',
-            hintStyle: const TextStyle(color: AppColors.grey),
+            hintStyle: TextStyle(color: AppColors.themedGrey),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.greyDark),
+              borderSide: BorderSide(color: AppColors.themedGreyBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
             ),
             filled: true,
-            fillColor: AppColors.card,
+            fillColor: AppColors.themedCard,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -470,7 +552,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.orange, width: 1.2),
@@ -487,7 +569,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text(
               'Enter the verification code sent to $phoneNumber',
-              style: const TextStyle(color: AppColors.black, fontSize: 14),
+              style: TextStyle(color: AppColors.themedText, fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -496,18 +578,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               keyboardType: TextInputType.number,
               maxLength: 6,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.black,
+              style: TextStyle(
+                color: AppColors.themedText,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 8,
               ),
               decoration: InputDecoration(
                 hintText: '000000',
-                hintStyle: const TextStyle(color: AppColors.greyDark),
+                hintStyle: TextStyle(color: AppColors.themedGreyBorder),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.greyDark),
+                  borderSide: BorderSide(color: AppColors.themedGreyBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -517,7 +599,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 filled: true,
-                fillColor: AppColors.card,
+                fillColor: AppColors.themedCard,
               ),
             ),
           ],
@@ -525,15 +607,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -573,7 +655,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.orange, width: 1.2),
@@ -588,34 +670,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          style: const TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
           decoration: InputDecoration(
             hintText: 'Enter $fieldName',
-            hintStyle: const TextStyle(color: AppColors.grey),
+            hintStyle: TextStyle(color: AppColors.themedGrey),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.greyDark),
+              borderSide: BorderSide(color: AppColors.themedGreyBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
             ),
             filled: true,
-            fillColor: AppColors.card,
+            fillColor: AppColors.themedCard,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -644,7 +726,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.orange, width: 1.2),
@@ -663,14 +745,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Name Field
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  labelStyle: const TextStyle(color: AppColors.grey),
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  labelStyle: TextStyle(color: AppColors.themedGrey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.greyDark),
+                    borderSide: BorderSide(color: AppColors.themedGreyBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -680,7 +762,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                 ),
               ),
               const SizedBox(height: 16),
@@ -689,14 +771,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextField(
                 controller: emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(color: AppColors.grey),
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  labelStyle: TextStyle(color: AppColors.themedGrey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.greyDark),
+                    borderSide: BorderSide(color: AppColors.themedGreyBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -706,7 +788,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                 ),
               ),
               const SizedBox(height: 16),
@@ -714,14 +796,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Location Field
               TextField(
                 controller: locationCtrl,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   labelText: 'Location',
-                  labelStyle: const TextStyle(color: AppColors.grey),
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  labelStyle: TextStyle(color: AppColors.themedGrey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.greyDark),
+                    borderSide: BorderSide(color: AppColors.themedGreyBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -731,7 +813,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                 ),
               ),
             ],
@@ -740,15 +822,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -803,9 +885,9 @@ class _ProfileInfoTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.greyDark, width: 1),
+          border: Border.all(color: AppColors.themedGreyBorder, width: 1),
         ),
         child: Row(
           children: [
@@ -824,8 +906,8 @@ class _ProfileInfoTile extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
-                      color: AppColors.grey,
+                    style: TextStyle(
+                      color: AppColors.themedGrey,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -833,8 +915,8 @@ class _ProfileInfoTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -842,7 +924,7 @@ class _ProfileInfoTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.grey, size: 20),
+            Icon(Icons.chevron_right, color: AppColors.themedGrey, size: 20),
           ],
         ),
       ),
@@ -868,9 +950,9 @@ class _ProfilePhoneTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.greyDark, width: 1),
+          border: Border.all(color: AppColors.themedGreyBorder, width: 1),
         ),
         child: Row(
           children: [
@@ -893,10 +975,10 @@ class _ProfilePhoneTile extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Phone',
                         style: TextStyle(
-                          color: AppColors.grey,
+                          color: AppColors.themedGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -970,8 +1052,8 @@ class _ProfilePhoneTile extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     phone,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: AppColors.themedText,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -979,7 +1061,7 @@ class _ProfilePhoneTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.grey, size: 20),
+            Icon(Icons.chevron_right, color: AppColors.themedGrey, size: 20),
           ],
         ),
       ),
@@ -1003,9 +1085,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.themedCard,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.greyDark, width: 1),
+        border: Border.all(color: AppColors.themedGreyBorder, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1014,8 +1096,8 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             title,
-            style: const TextStyle(
-              color: AppColors.grey,
+            style: TextStyle(
+              color: AppColors.themedGrey,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -1056,7 +1138,7 @@ class _BikeCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isActive
@@ -1085,8 +1167,8 @@ class _BikeCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               bike.name,
-                              style: const TextStyle(
-                                color: AppColors.black,
+                              style: TextStyle(
+                                color: AppColors.themedText,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -1135,14 +1217,14 @@ class _BikeCard extends StatelessWidget {
                 if (bike.model != null) ...[
                   Icon(
                     Icons.info_outline,
-                    color: AppColors.grey.withOpacity(0.7),
+                    color: AppColors.themedGrey.withOpacity(0.7),
                     size: 14,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     bike.model!,
                     style: TextStyle(
-                      color: AppColors.grey.withOpacity(0.8),
+                      color: AppColors.themedGrey.withOpacity(0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -1151,14 +1233,14 @@ class _BikeCard extends StatelessWidget {
                 if (bike.licensePlate != null) ...[
                   Icon(
                     Icons.confirmation_number_outlined,
-                    color: AppColors.grey.withOpacity(0.7),
+                    color: AppColors.themedGrey.withOpacity(0.7),
                     size: 14,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     bike.licensePlate!,
                     style: TextStyle(
-                      color: AppColors.grey.withOpacity(0.8),
+                      color: AppColors.themedGrey.withOpacity(0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -1167,14 +1249,14 @@ class _BikeCard extends StatelessWidget {
                 if (bike.yearOfPurchase != null) ...[
                   Icon(
                     Icons.calendar_today,
-                    color: AppColors.grey.withOpacity(0.7),
+                    color: AppColors.themedGrey.withOpacity(0.7),
                     size: 14,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     '${bike.yearOfPurchase}',
                     style: TextStyle(
-                      color: AppColors.grey.withOpacity(0.8),
+                      color: AppColors.themedGrey.withOpacity(0.8),
                       fontSize: 12,
                     ),
                   ),
@@ -1192,7 +1274,7 @@ class _BikeCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: _parseColor(bike.color!),
                         border: Border.all(
-                          color: AppColors.grey.withOpacity(0.5),
+                          color: AppColors.themedGrey.withOpacity(0.5),
                           width: 0.5,
                         ),
                       ),
@@ -1201,7 +1283,7 @@ class _BikeCard extends StatelessWidget {
                     Text(
                       bike.color!,
                       style: TextStyle(
-                        color: AppColors.grey.withOpacity(0.8),
+                        color: AppColors.themedGrey.withOpacity(0.8),
                         fontSize: 12,
                       ),
                     ),
@@ -1211,7 +1293,7 @@ class _BikeCard extends StatelessWidget {
                     Text(
                       '${bike.engineCapacity!.toStringAsFixed(0)} cc',
                       style: TextStyle(
-                        color: AppColors.grey.withOpacity(0.8),
+                        color: AppColors.themedGrey.withOpacity(0.8),
                         fontSize: 12,
                       ),
                     ),
@@ -1260,16 +1342,16 @@ class _BikeCard extends StatelessWidget {
   Color _parseColor(String colorName) {
     final name = colorName.toLowerCase();
     if (name.contains('red')) return Colors.red;
-    if (name.contains('black')) return Colors.black;
+    if (name.contains('black')) return AppColors.themedText;
     if (name.contains('white')) return Colors.white;
     if (name.contains('blue')) return Colors.blue;
     if (name.contains('green')) return Colors.green;
     if (name.contains('yellow')) return Colors.yellow;
-    if (name.contains('grey') || name.contains('gray')) return Colors.grey;
+    if (name.contains('grey') || name.contains('gray')) return AppColors.themedGrey;
     if (name.contains('orange')) return Colors.orange;
     if (name.contains('purple')) return Colors.purple;
     if (name.contains('chrome') || name.contains('silver')) {
-      return Colors.grey[400]!;
+      return AppColors.themedGrey;
     }
     return AppColors.orange;
   }

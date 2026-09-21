@@ -16,7 +16,7 @@ class RoleSelectionScreen extends StatelessWidget {
     final roles = RiderRole.values;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Select Role'),
         leading: IconButton(
@@ -45,7 +45,7 @@ class RoleSelectionScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.card,
+                color: AppColors.themedCard,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: AppColors.white, width: 1),
               ),
@@ -56,8 +56,8 @@ class RoleSelectionScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       role.displayName,
-                      style: const TextStyle(
-                        color: AppColors.black,
+                      style: TextStyle(
+                        color: AppColors.themedText,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                       ),

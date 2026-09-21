@@ -42,10 +42,10 @@ class _BikeBrandSelectionScreenState extends State<BikeBrandSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Select Bike Brand'),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.themedBackground,
         elevation: 0,
       ),
       body: Column(
@@ -56,13 +56,13 @@ class _BikeBrandSelectionScreenState extends State<BikeBrandSelectionScreen> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterBrands,
-              style: const TextStyle(color: AppColors.black),
+              style: TextStyle(color: AppColors.themedText),
               decoration: InputDecoration(
                 hintText: 'Search brand...',
-                hintStyle: const TextStyle(color: AppColors.grey),
+                hintStyle: TextStyle(color: AppColors.themedGrey),
                 prefixIcon: const Icon(Icons.search, color: AppColors.orange),
                 filled: true,
-                fillColor: AppColors.card,
+                fillColor: AppColors.themedCard,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(
@@ -94,15 +94,15 @@ class _BikeBrandSelectionScreenState extends State<BikeBrandSelectionScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.two_wheeler_outlined,
                           size: 64,
-                          color: AppColors.grey,
+                          color: AppColors.themedGrey,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'No brands found',
-                          style: TextStyle(color: AppColors.grey, fontSize: 16),
+                          style: TextStyle(color: AppColors.themedGrey, fontSize: 16),
                         ),
                       ],
                     ),
@@ -150,7 +150,7 @@ class _BrandCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.orange, width: 1),
         ),
@@ -171,8 +171,8 @@ class _BrandCard extends StatelessWidget {
             Expanded(
               child: Text(
                 brand.displayName,
-                style: const TextStyle(
-                  color: AppColors.black,
+                style: TextStyle(
+                  color: AppColors.themedText,
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                 ),
@@ -210,7 +210,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.themedSurface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: const BorderSide(color: AppColors.orange, width: 1.5),
@@ -233,10 +233,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 20),
 
               // Brand Selection
-              const Text(
+              Text(
                 'Select Brand *',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -257,12 +257,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: AppColors.themedCard,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: _selectedBrand != null
                           ? AppColors.orange
-                          : AppColors.grey,
+                          : AppColors.themedGrey,
                       width: 1,
                     ),
                   ),
@@ -273,8 +273,8 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                         _selectedBrand?.displayName ?? 'Tap to select brand',
                         style: TextStyle(
                           color: _selectedBrand != null
-                              ? AppColors.black
-                              : AppColors.grey,
+                              ? AppColors.themedText
+                              : AppColors.themedGrey,
                           fontSize: 14,
                         ),
                       ),
@@ -290,10 +290,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 16),
 
               // Bike Name
-              const Text(
+              Text(
                 'Bike Name *',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -301,12 +301,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _bikeNameController,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   hintText: 'e.g., My Royal Enfield',
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -319,10 +319,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 16),
 
               // Model
-              const Text(
+              Text(
                 'Model',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -330,12 +330,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _modelController,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   hintText: 'e.g., Classic 350',
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -348,10 +348,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 16),
 
               // Color
-              const Text(
+              Text(
                 'Color',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -359,12 +359,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _colorController,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   hintText: 'e.g., Black',
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -377,10 +377,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 16),
 
               // License Plate
-              const Text(
+              Text(
                 'License Plate',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -388,12 +388,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _licensePlateController,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   hintText: 'e.g., TN-01-XX-0001',
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -409,7 +409,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const Text(
                 'Engine Capacity (CC)',
                 style: TextStyle(
-                  color: AppColors.black,
+
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -418,12 +418,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               TextField(
                 controller: _engineCapacityController,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: AppColors.black),
+                style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
                   hintText: 'e.g., 350',
-                  hintStyle: const TextStyle(color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.themedGrey),
                   filled: true,
-                  fillColor: AppColors.card,
+                  fillColor: AppColors.themedCard,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
@@ -436,10 +436,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
               const SizedBox(height: 16),
 
               // Year of Purchase
-              const Text(
+              Text(
                 'Year of Purchase',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -460,12 +460,12 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                 child: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: AppColors.themedCard,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: _yearOfPurchase != null
                           ? AppColors.orange
-                          : AppColors.grey,
+                          : AppColors.themedGrey,
                       width: 1,
                     ),
                   ),
@@ -476,8 +476,8 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                         _yearOfPurchase?.toString() ?? 'Select year',
                         style: TextStyle(
                           color: _yearOfPurchase != null
-                              ? AppColors.black
-                              : AppColors.grey,
+                              ? AppColors.themedText
+                              : AppColors.themedGrey,
                           fontSize: 14,
                         ),
                       ),
@@ -500,7 +500,7 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.surface,
+                        backgroundColor: AppColors.themedSurface,
                         side: const BorderSide(
                           color: AppColors.orange,
                           width: 1,
@@ -569,10 +569,10 @@ class _AddBikeDialogState extends State<AddBikeDialog> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Add Bike',
                         style: TextStyle(
-                          color: AppColors.background,
+                          color: AppColors.themedBackground,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

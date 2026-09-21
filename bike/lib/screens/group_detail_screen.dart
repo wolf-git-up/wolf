@@ -52,7 +52,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: const BorderSide(color: AppColors.orange, width: 1.2),
@@ -67,35 +67,35 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          style: const TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
           decoration: InputDecoration(
             hintText: "Rider's name",
-            hintStyle: const TextStyle(color: AppColors.grey),
+            hintStyle: TextStyle(color: AppColors.themedGrey),
             prefixIcon: const Icon(Icons.person_add, color: AppColors.orange),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.greyDark),
+              borderSide: BorderSide(color: AppColors.themedGreyBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
             ),
             filled: true,
-            fillColor: AppColors.card,
+            fillColor: AppColors.themedCard,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.orange,
-              foregroundColor: Colors.black,
+              foregroundColor: AppColors.themedText,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -128,11 +128,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     final isCurrentUser = rider.id == squad.currentUserId;
     if (isCurrentUser) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
             'You are the group leader — your role cannot be changed.',
           ),
-          backgroundColor: AppColors.surface,
+          backgroundColor: AppColors.themedSurface,
         ),
       );
       return;
@@ -140,7 +140,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.themedSurface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         side: BorderSide(color: AppColors.orange, width: 1),
@@ -158,7 +158,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.greyDark,
+                    color: AppColors.themedGreyBorder,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -174,15 +174,15 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                       children: [
                         Text(
                           rider.name,
-                          style: const TextStyle(
-                            color: AppColors.black,
+                          style: TextStyle(
+                            color: AppColors.themedText,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        const Text(
+                        Text(
                           'Assign Position',
-                          style: TextStyle(color: AppColors.grey, fontSize: 13),
+                          style: TextStyle(color: AppColors.themedGrey, fontSize: 13),
                         ),
                       ],
                     ),
@@ -190,7 +190,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                 ],
               ),
               const SizedBox(height: 20),
-              const Divider(color: AppColors.greyDark),
+              Divider(color: AppColors.themedGreyBorder),
               const SizedBox(height: 12),
               // Role options (excluding leader which is reserved for current user)
               ...RiderRole.values
@@ -221,10 +221,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.orangeGlow : AppColors.card,
+          color: isSelected ? AppColors.orangeGlow : AppColors.themedCard,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppColors.orange : AppColors.greyDark,
+            color: isSelected ? AppColors.orange : AppColors.themedGreyBorder,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -239,14 +239,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                   Text(
                     role.displayName,
                     style: TextStyle(
-                      color: isSelected ? AppColors.orange : AppColors.black,
+                      color: isSelected ? AppColors.orange : AppColors.themedText,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
                   ),
                   Text(
                     _roleDescription(role),
-                    style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                    style: TextStyle(color: AppColors.themedGrey, fontSize: 12),
                   ),
                 ],
               ),
@@ -282,7 +282,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
 
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.themedSurface,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -299,7 +299,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                   width: 42,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.greyDark,
+                    color: AppColors.themedGreyBorder,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -307,10 +307,10 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               const SizedBox(height: 20),
               const Icon(Icons.videocam, color: AppColors.orange, size: 34),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Start Group Call',
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
                 ),
@@ -319,32 +319,32 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               Text(
                 'Launch a live online call for ${group.name} so everyone can stay connected while riding.',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey, fontSize: 14),
+                style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
               ),
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: AppColors.themedCard,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.greyDark),
+                  border: Border.all(color: AppColors.themedGreyBorder),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       group.name,
-                      style: const TextStyle(
-                        color: AppColors.black,
+                      style: TextStyle(
+                        color: AppColors.themedText,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       '${group.members.length} riders ready to join',
-                      style: const TextStyle(
-                        color: AppColors.grey,
+                      style: TextStyle(
+                        color: AppColors.themedGrey,
                         fontSize: 13,
                       ),
                     ),
@@ -361,7 +361,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                       label: const Text('Cancel'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.white,
-                        side: const BorderSide(color: AppColors.greyDark),
+                        side: BorderSide(color: AppColors.themedGreyBorder),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -377,11 +377,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                         );
                         if (!launched && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
                                 'Unable to open the call link right now.',
                               ),
-                              backgroundColor: AppColors.surface,
+                              backgroundColor: AppColors.themedSurface,
                             ),
                           );
                         }
@@ -390,7 +390,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                       label: const Text('Start Call'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.orange,
-                        foregroundColor: Colors.black,
+                        foregroundColor: AppColors.themedText,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -415,7 +415,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         final isLeader = squad.isCurrentUser(group.leaderId);
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.themedBackground,
           appBar: AppBar(
             title: Text(group.name),
             actions: [
@@ -429,7 +429,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               controller: _tabController,
               indicatorColor: AppColors.orange,
               labelColor: AppColors.orange,
-              unselectedLabelColor: AppColors.grey,
+              unselectedLabelColor: AppColors.themedGrey,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
@@ -445,7 +445,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               ? FloatingActionButton(
                   onPressed: () => _showAddMemberDialog(context),
                   backgroundColor: AppColors.orange,
-                  foregroundColor: Colors.black,
+                  foregroundColor: AppColors.themedText,
                   child: const Icon(Icons.person_add),
                 )
               : null,
@@ -495,10 +495,10 @@ class _MembersTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (group.members.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No members yet.',
-          style: TextStyle(color: AppColors.grey, fontSize: 16),
+          style: TextStyle(color: AppColors.themedGrey, fontSize: 16),
         ),
       );
     }
@@ -525,8 +525,8 @@ class _MembersTab extends StatelessWidget {
                         Flexible(
                           child: Text(
                             rider.name,
-                            style: const TextStyle(
-                              color: AppColors.black,
+                            style: TextStyle(
+                              color: AppColors.themedText,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -593,25 +593,25 @@ class _MembersTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.themedSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(color: AppColors.danger.withOpacity(0.5), width: 1),
         ),
-        title: const Text(
+        title: Text(
           'Remove Rider?',
-          style: TextStyle(color: AppColors.black),
+          style: TextStyle(color: AppColors.themedText),
         ),
         content: Text(
           'Remove ${rider.name} from the group?',
-          style: const TextStyle(color: AppColors.grey),
+          style: TextStyle(color: AppColors.themedGrey),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           ElevatedButton(
@@ -683,7 +683,7 @@ class _FormationTab extends StatelessWidget {
           // Direction arrow
           Row(
             children: [
-              const Expanded(child: Divider(color: AppColors.greyDark)),
+              Expanded(child: Divider(color: AppColors.themedGreyBorder)),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 12),
                 padding: const EdgeInsets.symmetric(
@@ -712,16 +712,16 @@ class _FormationTab extends StatelessWidget {
                   ],
                 ),
               ),
-              const Expanded(child: Divider(color: AppColors.greyDark)),
+              Expanded(child: Divider(color: AppColors.themedGreyBorder)),
             ],
           ),
 
           const SizedBox(height: 20),
 
           if (formation.isEmpty)
-            const Text(
+            Text(
               'No riders in formation yet.',
-              style: TextStyle(color: AppColors.grey),
+              style: TextStyle(color: AppColors.themedGrey),
             )
           else
             // Formation grid — 2 per row
@@ -744,8 +744,8 @@ class _FormationTab extends StatelessWidget {
                     children: [
                       Text(
                         '#${i + 1}',
-                        style: const TextStyle(
-                          color: AppColors.grey,
+                        style: TextStyle(
+                          color: AppColors.themedGrey,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -755,8 +755,8 @@ class _FormationTab extends StatelessWidget {
                       const SizedBox(height: 10),
                       Text(
                         rider.name.split(' ').first,
-                        style: const TextStyle(
-                          color: AppColors.black,
+                        style: TextStyle(
+                          color: AppColors.themedText,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -775,7 +775,7 @@ class _FormationTab extends StatelessWidget {
           // Tail indicator
           Row(
             children: [
-              const Expanded(child: Divider(color: AppColors.greyDark)),
+              Expanded(child: Divider(color: AppColors.themedGreyBorder)),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 12),
                 padding: const EdgeInsets.symmetric(
@@ -783,19 +783,19 @@ class _FormationTab extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.greyDark.withOpacity(0.5),
+                  color: AppColors.themedGreyBorder.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.greyDark, width: 1),
+                  border: Border.all(color: AppColors.themedGreyBorder, width: 1),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.arrow_downward, color: AppColors.grey, size: 14),
+                    Icon(Icons.arrow_downward, color: AppColors.themedGrey, size: 14),
                     SizedBox(width: 4),
                     Text(
                       'BACK OF RIDE',
                       style: TextStyle(
-                        color: AppColors.grey,
+                        color: AppColors.themedGrey,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 1,
@@ -804,7 +804,7 @@ class _FormationTab extends StatelessWidget {
                   ],
                 ),
               ),
-              const Expanded(child: Divider(color: AppColors.greyDark)),
+              Expanded(child: Divider(color: AppColors.themedGreyBorder)),
             ],
           ),
         ],
@@ -863,10 +863,10 @@ class _ChatTabState extends State<_ChatTab> {
           children: [
             Expanded(
               child: messages.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         'No messages yet.',
-                        style: TextStyle(color: AppColors.grey, fontSize: 16),
+                        style: TextStyle(color: AppColors.themedGrey, fontSize: 16),
                       ),
                     )
                   : ListView.separated(
@@ -885,10 +885,10 @@ class _ChatTabState extends State<_ChatTab> {
               top: false,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
+                decoration: BoxDecoration(
+                  color: AppColors.themedSurface,
                   border: Border(
-                    top: BorderSide(color: AppColors.greyDark, width: 1),
+                    top: BorderSide(color: AppColors.themedGreyBorder, width: 1),
                   ),
                 ),
                 child: Row(
@@ -898,22 +898,22 @@ class _ChatTabState extends State<_ChatTab> {
                         controller: _messageController,
                         minLines: 1,
                         maxLines: 4,
-                        style: const TextStyle(color: AppColors.black),
+                        style: TextStyle(color: AppColors.themedText),
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => _sendMessage(squad),
                         decoration: InputDecoration(
                           hintText: 'Message ${widget.group.name}',
-                          hintStyle: const TextStyle(color: AppColors.grey),
+                          hintStyle: TextStyle(color: AppColors.themedGrey),
                           filled: true,
-                          fillColor: AppColors.card,
+                          fillColor: AppColors.themedCard,
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 12,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(
-                              color: AppColors.greyDark,
+                            borderSide: BorderSide(
+                              color: AppColors.themedGreyBorder,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -934,7 +934,7 @@ class _ChatTabState extends State<_ChatTab> {
                         onPressed: () => _sendMessage(squad),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.orange,
-                          foregroundColor: Colors.black,
+                          foregroundColor: AppColors.themedText,
                           padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -971,7 +971,7 @@ class _ChatBubble extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: isMine ? AppColors.orange : AppColors.card,
+            color: isMine ? AppColors.orange : AppColors.themedCard,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),
@@ -979,7 +979,7 @@ class _ChatBubble extends StatelessWidget {
               bottomRight: Radius.circular(isMine ? 4 : 16),
             ),
             border: Border.all(
-              color: isMine ? AppColors.orange : AppColors.greyDark,
+              color: isMine ? AppColors.orange : AppColors.themedGreyBorder,
               width: 1,
             ),
           ),
@@ -991,7 +991,7 @@ class _ChatBubble extends StatelessWidget {
               Text(
                 message.senderName,
                 style: TextStyle(
-                  color: isMine ? Colors.black87 : AppColors.orange,
+                  color: isMine ? AppColors.themedText : AppColors.orange,
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                 ),
@@ -1000,7 +1000,7 @@ class _ChatBubble extends StatelessWidget {
               Text(
                 message.text,
                 style: TextStyle(
-                  color: AppColors.black,
+                  color: AppColors.themedText,
                   fontSize: 15,
                   height: 1.25,
                 ),
@@ -1009,7 +1009,7 @@ class _ChatBubble extends StatelessWidget {
               Text(
                 _formatTime(message.sentAt),
                 style: TextStyle(
-                  color: isMine ? Colors.black54 : AppColors.grey,
+                  color: isMine ? AppColors.themedGrey : AppColors.themedGrey,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),

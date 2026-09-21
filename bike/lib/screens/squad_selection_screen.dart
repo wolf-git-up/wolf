@@ -18,14 +18,14 @@ class SquadSelectionScreen extends StatelessWidget {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: AppColors.surface,
+          backgroundColor: AppColors.themedSurface,
           title: const Text('Create Squad'),
           content: TextField(
             controller: controller,
-            style: const TextStyle(color: AppColors.black),
-            decoration: const InputDecoration(
+            style: TextStyle(color: AppColors.themedText),
+            decoration: InputDecoration(
               hintText: 'Squad name',
-              hintStyle: TextStyle(color: AppColors.grey),
+              hintStyle: TextStyle(color: AppColors.themedGrey),
             ),
           ),
           actions: [
@@ -63,7 +63,7 @@ class SquadSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
         title: const Text('Join or Create Squad'),
         leading: IconButton(
@@ -84,8 +84,8 @@ class SquadSelectionScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         'Select an existing squad or create a new one to continue.',
-                        style: const TextStyle(
-                          color: AppColors.black,
+                        style: TextStyle(
+                          color: AppColors.themedText,
                           fontSize: 14,
                         ),
                       ),
@@ -110,18 +110,18 @@ class SquadSelectionScreen extends StatelessWidget {
                             color: AppColors.orange,
                           ),
                           const SizedBox(height: 16),
-                          const Text(
+                          Text(
                             'No squads yet',
                             style: TextStyle(
-                              color: AppColors.black,
+                              color: AppColors.themedText,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
+                          Text(
                             'Create a squad to start group rides',
-                            style: TextStyle(color: AppColors.grey),
+                            style: TextStyle(color: AppColors.themedGrey),
                           ),
                         ],
                       ),
@@ -176,7 +176,7 @@ class _SquadCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.themedCard,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.white, width: 1),
           boxShadow: [
@@ -195,8 +195,8 @@ class _SquadCard extends StatelessWidget {
                     children: [
                       Text(
                         squad.name,
-                        style: const TextStyle(
-                          color: AppColors.black,
+                        style: TextStyle(
+                          color: AppColors.themedText,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -204,8 +204,8 @@ class _SquadCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${squad.members.length} members',
-                        style: const TextStyle(
-                          color: AppColors.grey,
+                        style: TextStyle(
+                          color: AppColors.themedGrey,
                           fontSize: 12,
                         ),
                       ),
