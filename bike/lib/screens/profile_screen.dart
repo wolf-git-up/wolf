@@ -16,28 +16,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isPhoneVerified = true;
-  late String phoneNumber;
-  late String userName;
-  late String userEmail;
-  late String userLocation;
-
-  @override
-  void initState() {
-    super.initState();
-    phoneNumber = '+91 98765 43210';
-    userName = 'You (Leader)';
-    userEmail = 'rider@bikesquad.com';
-    userLocation = 'Chennai, Tamil Nadu';
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final currentUser = authProvider.currentUser;
 
-    final displayName = (currentUser?.name.isNotEmpty == true) ? currentUser!.name : userName;
-    final displayEmail = (currentUser?.email.isNotEmpty == true) ? currentUser!.email : userEmail;
+    final displayName = (currentUser?.name.isNotEmpty == true) ? currentUser!.name : 'Unknown User';
+    final displayEmail = (currentUser?.email.isNotEmpty == true) ? currentUser!.email : 'No email';
+    final displayPhone = (currentUser?.phone.isNotEmpty == true) ? currentUser!.phone : 'No phone';
 
     return Scaffold(
       backgroundColor: AppColors.themedBackground,
@@ -146,12 +132,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 'Email',
                 displayEmail,
                 (value) {
-                  setState(() => userEmail = value);
                   if (currentUser != null) {
                     context.read<AuthProvider>().updateCurrentUser(
                       UserModel(
                         name: currentUser.name,
                         email: value,
+                        phone: currentUser.phone,
                         password: currentUser.password,
                         bikeStatus: currentUser.bikeStatus,
                         bikeBrand: currentUser.bikeBrand,
@@ -166,21 +152,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            _ProfilePhoneTile(
-              phone: phoneNumber,
-              isVerified: isPhoneVerified,
-              onTap: () => _showPhoneDialog(context),
-            ),
-            const SizedBox(height: 12),
             _ProfileInfoTile(
-              icon: Icons.location_on_outlined,
-              title: 'Location',
-              value: userLocation,
+              icon: Icons.phone_outlined,
+              title: 'Phone',
+              value: displayPhone,
               onTap: () => _showEditFieldDialog(
                 context,
-                'Location',
-                userLocation,
-                (value) => setState(() => userLocation = value),
+                'Phone',
+                displayPhone,
+                (value) {
+                  if (currentUser != null) {
+                    context.read<AuthProvider>().updateCurrentUser(
+                      UserModel(
+                        name: currentUser.name,
+                        email: currentUser.email,
+                        phone: value,
+                        password: currentUser.password,
+                        bikeStatus: currentUser.bikeStatus,
+                        bikeBrand: currentUser.bikeBrand,
+                        bikeModel: currentUser.bikeModel,
+                        bikeCc: currentUser.bikeCc,
+                        bikeYear: currentUser.bikeYear,
+                        bikeRegistration: currentUser.bikeRegistration,
+                      ),
+                    );
+                  }
+                },
               ),
             ),
 
@@ -474,176 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showPhoneDialog(BuildContext context) {
-    final ctrl = TextEditingController(text: phoneNumber);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.themedSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.orange, width: 1.2),
-        ),
-        title: const Text(
-          'Update Phone Number',
-          style: TextStyle(
-            color: AppColors.orange,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          keyboardType: TextInputType.phone,
-          style: TextStyle(color: AppColors.themedText),
-          decoration: InputDecoration(
-            hintText: 'e.g. +91 98765 43210',
-            hintStyle: TextStyle(color: AppColors.themedGrey),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.themedGreyBorder),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.orange, width: 1.5),
-            ),
-            filled: true,
-            fillColor: AppColors.themedCard,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.themedGrey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
-              foregroundColor: AppColors.themedText,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              if (ctrl.text.trim().isNotEmpty) {
-                setState(() {
-                  phoneNumber = ctrl.text.trim();
-                  isPhoneVerified = false;
-                });
-                Navigator.pop(ctx);
-                _showVerificationDialog(context);
-              }
-            },
-            child: const Text(
-              'Update',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  void _showVerificationDialog(BuildContext context) {
-    final verificationCtrl = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.themedSurface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.orange, width: 1.2),
-        ),
-        title: const Text(
-          'Verify Phone Number',
-          style: TextStyle(
-            color: AppColors.orange,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Enter the verification code sent to $phoneNumber',
-              style: TextStyle(color: AppColors.themedText, fontSize: 14),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: verificationCtrl,
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              maxLength: 6,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: AppColors.themedText,
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 8,
-              ),
-              decoration: InputDecoration(
-                hintText: '000000',
-                hintStyle: TextStyle(color: AppColors.themedGreyBorder),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.themedGreyBorder),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.orange,
-                    width: 1.5,
-                  ),
-                ),
-                filled: true,
-                fillColor: AppColors.themedCard,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.themedGrey),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-              foregroundColor: AppColors.themedText,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              if (verificationCtrl.text.length == 6) {
-                setState(() {
-                  isPhoneVerified = true;
-                });
-                Navigator.pop(ctx);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Phone number verified successfully!'),
-                    backgroundColor: Colors.green,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              }
-            },
-            child: const Text(
-              'Verify',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showEditFieldDialog(
     BuildContext context,
@@ -719,9 +547,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showEditProfileDialog(BuildContext context) {
-    final nameCtrl = TextEditingController(text: userName);
-    final emailCtrl = TextEditingController(text: userEmail);
-    final locationCtrl = TextEditingController(text: userLocation);
+    final currentUser = context.read<AuthProvider>().currentUser;
+    final nameCtrl = TextEditingController(text: currentUser?.name ?? '');
+    final emailCtrl = TextEditingController(text: currentUser?.email ?? '');
+    final phoneCtrl = TextEditingController(text: currentUser?.phone ?? '');
 
     showDialog(
       context: context,
@@ -793,12 +622,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Location Field
+              // Phone Field
               TextField(
-                controller: locationCtrl,
+                controller: phoneCtrl,
+                keyboardType: TextInputType.phone,
                 style: TextStyle(color: AppColors.themedText),
                 decoration: InputDecoration(
-                  labelText: 'Location',
+                  labelText: 'Phone',
                   labelStyle: TextStyle(color: AppColors.themedGrey),
                   hintStyle: TextStyle(color: AppColors.themedGrey),
                   enabledBorder: OutlineInputBorder(
@@ -838,12 +668,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               if (nameCtrl.text.trim().isNotEmpty &&
                   emailCtrl.text.trim().isNotEmpty &&
-                  locationCtrl.text.trim().isNotEmpty) {
-                setState(() {
-                  userName = nameCtrl.text.trim();
-                  userEmail = emailCtrl.text.trim();
-                  userLocation = locationCtrl.text.trim();
-                });
+                  phoneCtrl.text.trim().isNotEmpty) {
+                if (currentUser != null) {
+                  context.read<AuthProvider>().updateCurrentUser(
+                    UserModel(
+                      name: nameCtrl.text.trim(),
+                      email: emailCtrl.text.trim(),
+                      phone: phoneCtrl.text.trim(),
+                      password: currentUser.password,
+                      bikeStatus: currentUser.bikeStatus,
+                      bikeBrand: currentUser.bikeBrand,
+                      bikeModel: currentUser.bikeModel,
+                      bikeCc: currentUser.bikeCc,
+                      bikeYear: currentUser.bikeYear,
+                      bikeRegistration: currentUser.bikeRegistration,
+                    ),
+                  );
+                }
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

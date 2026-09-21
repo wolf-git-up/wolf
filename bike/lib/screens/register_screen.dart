@@ -18,6 +18,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   
   // Bike details controllers
@@ -33,12 +34,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() async {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill in all mandatory personal details (Name, Email, Password).'),
+          content: Text('Please fill in all mandatory personal details (Name, Email, Phone, Password).'),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
         ),
@@ -90,6 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final newUser = UserModel(
       name: name,
       email: email,
+      phone: phone,
       password: password,
       bikeStatus: _bikeStatus,
       bikeBrand: _bikeStatus == 'Have bike' ? _bikeBrandController.text.trim() : null,
@@ -146,6 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _bikeBrandController.dispose();
     _bikeModelController.dispose();
@@ -236,6 +240,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     label: 'Email Address *',
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
+                  ),
+                  _buildTextField(
+                    controller: _phoneController,
+                    label: 'Phone Number *',
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
                   ),
                   _buildTextField(
                     controller: _passwordController,

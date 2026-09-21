@@ -3,6 +3,7 @@ import 'dart:convert';
 class UserModel {
   final String name;
   final String email;
+  final String phone;
   final String password;
   final String bikeStatus;
   final String? bikeBrand;
@@ -14,6 +15,7 @@ class UserModel {
   UserModel({
     required this.name,
     required this.email,
+    required this.phone,
     required this.password,
     required this.bikeStatus,
     this.bikeBrand,
@@ -27,6 +29,7 @@ class UserModel {
     return {
       'name': name,
       'email': email,
+      'phone': phone,
       'password': password,
       'bikeStatus': bikeStatus,
       'bikeBrand': bikeBrand,
@@ -41,6 +44,7 @@ class UserModel {
     return UserModel(
       name: map['name'] ?? '',
       email: map['email'] ?? '',
+      phone: map['phone'] ?? '',
       password: map['password'] ?? '',
       bikeStatus: map['bikeStatus'] ?? 'Don\'t have bike',
       bikeBrand: map['bikeBrand'],

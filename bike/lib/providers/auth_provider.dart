@@ -54,6 +54,7 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = UserModel(
           name: 'Rider',
           email: activeEmail,
+          phone: '',
           password: '',
           bikeStatus: 'Don\'t have bike',
         );

@@ -181,7 +181,7 @@ class AuthHeader extends StatelessWidget {
                           height: 140,
                           color: Colors.white,
                           child: Image.asset(
-                            'assets/images/rider_header.jpg',
+                            'assets/images/logo.jpg',
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Container(

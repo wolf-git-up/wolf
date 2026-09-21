@@ -218,10 +218,11 @@ class _SplashScreenState extends State<SplashScreen>
                               ),
                             ],
                           ),
-                          child: const Icon(
-                            Icons.motorcycle,
-                            size: 88,
-                            color: _white,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/logo.jpg',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
