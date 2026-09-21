@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../providers/squad_provider.dart';
 import '../../models/rider_model.dart';
 import '../../theme/app_theme.dart';
@@ -21,13 +22,21 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChanged);
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _handleTabChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   RiderGroup? _getGroup(SquadProvider squad) {
@@ -58,7 +67,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
           decoration: InputDecoration(
             hintText: "Rider's name",
             hintStyle: const TextStyle(color: AppColors.grey),
@@ -166,7 +175,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                         Text(
                           rider.name,
                           style: const TextStyle(
-                            color: AppColors.white,
+                            color: AppColors.black,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
@@ -230,7 +239,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                   Text(
                     role.displayName,
                     style: TextStyle(
-                      color: isSelected ? AppColors.orange : AppColors.white,
+                      color: isSelected ? AppColors.orange : AppColors.black,
                       fontWeight: FontWeight.w700,
                       fontSize: 15,
                     ),
@@ -265,6 +274,136 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
     }
   }
 
+  Future<void> _showGroupCallSheet(
+    BuildContext context,
+    RiderGroup group,
+  ) async {
+    final meetingUrl = Uri.parse('https://meet.google.com/new?authuser=0');
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        side: BorderSide(color: AppColors.orange, width: 1),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Container(
+                  width: 42,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.greyDark,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Icon(Icons.videocam, color: AppColors.orange, size: 34),
+              const SizedBox(height: 12),
+              const Text(
+                'Start Group Call',
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Launch a live online call for ${group.name} so everyone can stay connected while riding.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.grey, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.card,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.greyDark),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.name,
+                      style: const TextStyle(
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '${group.members.length} riders ready to join',
+                      style: const TextStyle(
+                        color: AppColors.grey,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => Navigator.pop(ctx),
+                      icon: const Icon(Icons.close),
+                      label: const Text('Cancel'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.white,
+                        side: const BorderSide(color: AppColors.greyDark),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        final launched = await launchUrl(
+                          meetingUrl,
+                          mode: LaunchMode.externalApplication,
+                        );
+                        if (!launched && context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Unable to open the call link right now.',
+                              ),
+                              backgroundColor: AppColors.surface,
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.call),
+                      label: const Text('Start Call'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.orange,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<SquadProvider>(
@@ -279,6 +418,13 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
           backgroundColor: AppColors.background,
           appBar: AppBar(
             title: Text(group.name),
+            actions: [
+              IconButton(
+                tooltip: 'Group call',
+                icon: const Icon(Icons.videocam),
+                onPressed: () => _showGroupCallSheet(context, group),
+              ),
+            ],
             bottom: TabBar(
               controller: _tabController,
               indicatorColor: AppColors.orange,
@@ -291,10 +437,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
               tabs: const [
                 Tab(text: 'MEMBERS'),
                 Tab(text: 'FORMATION'),
+                Tab(text: 'CHAT'),
               ],
             ),
           ),
-          floatingActionButton: isLeader
+          floatingActionButton: isLeader && _tabController.index == 0
               ? FloatingActionButton(
                   onPressed: () => _showAddMemberDialog(context),
                   backgroundColor: AppColors.orange,
@@ -314,6 +461,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen>
                 onRemove: (rider) => squad.removeMember(group.id, rider.id),
               ),
               _FormationTab(group: group),
+              _ChatTab(group: group),
             ],
           ),
         );
@@ -378,7 +526,7 @@ class _MembersTab extends StatelessWidget {
                           child: Text(
                             rider.name,
                             style: const TextStyle(
-                              color: AppColors.white,
+                              color: AppColors.black,
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
                             ),
@@ -452,7 +600,7 @@ class _MembersTab extends StatelessWidget {
         ),
         title: const Text(
           'Remove Rider?',
-          style: TextStyle(color: AppColors.white),
+          style: TextStyle(color: AppColors.black),
         ),
         content: Text(
           'Remove ${rider.name} from the group?',
@@ -608,7 +756,7 @@ class _FormationTab extends StatelessWidget {
                       Text(
                         rider.name.split(' ').first,
                         style: const TextStyle(
-                          color: AppColors.white,
+                          color: AppColors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
@@ -662,5 +810,221 @@ class _FormationTab extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// Chat Tab
+
+class _ChatTab extends StatefulWidget {
+  final RiderGroup group;
+
+  const _ChatTab({required this.group});
+
+  @override
+  State<_ChatTab> createState() => _ChatTabState();
+}
+
+class _ChatTabState extends State<_ChatTab> {
+  final TextEditingController _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage(SquadProvider squad) {
+    final sent = squad.sendChatMessage(
+      widget.group.id,
+      _messageController.text,
+    );
+    if (!sent) return;
+
+    _messageController.clear();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<SquadProvider>(
+      builder: (context, squad, _) {
+        final messages = squad.getChatMessages(widget.group.id);
+
+        return Column(
+          children: [
+            Expanded(
+              child: messages.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No messages yet.',
+                        style: TextStyle(color: AppColors.grey, fontSize: 16),
+                      ),
+                    )
+                  : ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                      itemCount: messages.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMine = message.senderId == squad.currentUserId;
+                        return _ChatBubble(message: message, isMine: isMine);
+                      },
+                    ),
+            ),
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(
+                    top: BorderSide(color: AppColors.greyDark, width: 1),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _messageController,
+                        minLines: 1,
+                        maxLines: 4,
+                        style: const TextStyle(color: AppColors.black),
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (_) => _sendMessage(squad),
+                        decoration: InputDecoration(
+                          hintText: 'Message ${widget.group.name}',
+                          hintStyle: const TextStyle(color: AppColors.grey),
+                          filled: true,
+                          fillColor: AppColors.card,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: AppColors.greyDark,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: AppColors.orange,
+                              width: 1.4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: () => _sendMessage(squad),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.orange,
+                          foregroundColor: Colors.black,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: const Icon(Icons.send, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ChatBubble extends StatelessWidget {
+  final SquadChatMessage message;
+  final bool isMine;
+
+  const _ChatBubble({required this.message, required this.isMine});
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.76,
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isMine ? AppColors.orange : AppColors.card,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(isMine ? 16 : 4),
+              bottomRight: Radius.circular(isMine ? 4 : 16),
+            ),
+            border: Border.all(
+              color: isMine ? AppColors.orange : AppColors.greyDark,
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: isMine
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              Text(
+                message.senderName,
+                style: TextStyle(
+                  color: isMine ? Colors.black87 : AppColors.orange,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                message.text,
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 15,
+                  height: 1.25,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                _formatTime(message.sentAt),
+                style: TextStyle(
+                  color: isMine ? Colors.black54 : AppColors.grey,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatTime(DateTime time) {
+    final hour = time.hour % 12 == 0 ? 12 : time.hour % 12;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
   }
 }

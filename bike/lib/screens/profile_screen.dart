@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     userName,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                     ),
@@ -120,7 +120,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Text(
               'Profile Information',
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -292,7 +292,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Text(
               'Ride Statistics',
               style: TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
@@ -413,7 +413,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: ctrl,
           autofocus: true,
           keyboardType: TextInputType.phone,
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
           decoration: InputDecoration(
             hintText: 'e.g. +91 98765 43210',
             hintStyle: const TextStyle(color: AppColors.grey),
@@ -487,7 +487,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Text(
               'Enter the verification code sent to $phoneNumber',
-              style: const TextStyle(color: AppColors.white, fontSize: 14),
+              style: const TextStyle(color: AppColors.black, fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -497,7 +497,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               maxLength: 6,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: AppColors.white,
+                color: AppColors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 8,
@@ -588,7 +588,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: TextField(
           controller: ctrl,
           autofocus: true,
-          style: const TextStyle(color: AppColors.white),
+          style: const TextStyle(color: AppColors.black),
           decoration: InputDecoration(
             hintText: 'Enter $fieldName',
             hintStyle: const TextStyle(color: AppColors.grey),
@@ -663,7 +663,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Name Field
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   labelText: 'Name',
                   labelStyle: const TextStyle(color: AppColors.grey),
@@ -689,7 +689,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextField(
                 controller: emailCtrl,
                 keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: const TextStyle(color: AppColors.grey),
@@ -714,7 +714,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Location Field
               TextField(
                 controller: locationCtrl,
-                style: const TextStyle(color: AppColors.white),
+                style: const TextStyle(color: AppColors.black),
                 decoration: InputDecoration(
                   labelText: 'Location',
                   labelStyle: const TextStyle(color: AppColors.grey),
@@ -834,7 +834,7 @@ class _ProfileInfoTile extends StatelessWidget {
                   Text(
                     value,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -971,7 +971,7 @@ class _ProfilePhoneTile extends StatelessWidget {
                   Text(
                     phone,
                     style: const TextStyle(
-                      color: AppColors.white,
+                      color: AppColors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
                     ),
@@ -1086,7 +1086,7 @@ class _BikeCard extends StatelessWidget {
                             child: Text(
                               bike.name,
                               style: const TextStyle(
-                                color: AppColors.white,
+                                color: AppColors.black,
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
                               ),

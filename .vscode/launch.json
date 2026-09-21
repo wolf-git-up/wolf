@@ -17,6 +17,12 @@
             "program": "bin/main.dart"
         },
         {
+            "name": "Dart: Run all Tests",
+            "type": "dart",
+            "request": "launch",
+            "program": "./test/"
+        },
+        {
             "name": "bike",
             "cwd": "bike",
             "request": "launch",
@@ -44,8 +50,11 @@
             "flutterMode": "release"
         },
         {
-            "name": "flutter",
-            "cwd": "flutter",
+            "name": "bike (Flutter SM A156E)",
+            "cwd": "bike",
             "request": "launch",
-            "type": "dart"
-        },
+            "type": "dart",
+            "deviceId": "SM A156E"
+        }
+    ]
+}
