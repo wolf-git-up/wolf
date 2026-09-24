@@ -5,6 +5,7 @@ import '../../models/rider_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/squad_widgets.dart';
 import 'group_detail_screen.dart';
+import '../widgets/community_dialogs.dart';
 
 class SquadScreen extends StatefulWidget {
   const SquadScreen({super.key});
@@ -135,6 +136,11 @@ class _SquadScreenState extends State<SquadScreen>
                     : null,
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.group_add_outlined),
+            tooltip: 'Join Squad',
+            onPressed: () => showJoinSquadDialog(context),
           ),
           const SizedBox(width: 8),
         ],

@@ -4,6 +4,7 @@ import 'models/rider_model.dart';
 import 'providers/squad_provider.dart';
 import 'providers/bike_provider.dart';
 import 'providers/ride_provider.dart';
+import 'providers/ride_tracking_provider.dart';
 import 'providers/auth_provider.dart';
 import 'screens/expenses_screen.dart';
 import 'screens/ride_name_screen.dart';
@@ -11,7 +12,10 @@ import 'screens/squad_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/stats_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/ride_tracking_screen.dart';
 import 'theme/app_theme.dart';
+import 'providers/community_provider.dart';
+import 'widgets/community_dialogs.dart';
 
 void main() {
   runApp(
@@ -21,6 +25,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => SquadProvider()),
         ChangeNotifierProvider(create: (_) => BikeProvider()),
         ChangeNotifierProvider(create: (_) => RideSetup()),
+        ChangeNotifierProvider(create: (_) => RideTrackingProvider()),
+        ChangeNotifierProvider(create: (_) => CommunityProvider()),
         ChangeNotifierProvider(create: (_) => AppTheme()),
       ],
       child: const BikeSquadApp(),
@@ -142,7 +148,10 @@ class _HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.themedBackground,
       appBar: AppBar(
-        title: Text('Bike Squad', style: TextStyle(color: AppColors.themedText)),
+        title: Text(
+          'Bike Squad',
+          style: TextStyle(color: AppColors.themedText),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -190,7 +199,10 @@ class _HomeScreen extends StatelessWidget {
                     SizedBox(height: 4),
                     Text(
                       '3Bikers Squad',
-                      style: TextStyle(color: AppColors.themedText, fontSize: 13),
+                      style: TextStyle(
+                        color: AppColors.themedText,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -300,6 +312,16 @@ class _HomeScreen extends StatelessWidget {
                   onTap: onReportsTap ?? () {},
                 ),
               ],
+            ),
+
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => showAddRiderDialog(context),
+                icon: const Icon(Icons.person_add_alt_1),
+                label: const Text('Add Rider'),
+              ),
             ),
 
             const SizedBox(height: 24),
@@ -519,16 +541,16 @@ class _RideHistoryCard extends StatelessWidget {
 }
 
 // ─── Map Tab Screen ─────────────────────────────────────────────────────────
-class MapTabScreen extends StatefulWidget {
+class LegacyMapTabScreen extends StatefulWidget {
   final VoidCallback onRideEnded;
 
-  const MapTabScreen({super.key, required this.onRideEnded});
+  const LegacyMapTabScreen({super.key, required this.onRideEnded});
 
   @override
-  State<MapTabScreen> createState() => _MapTabScreenState();
+  State<LegacyMapTabScreen> createState() => _LegacyMapTabScreenState();
 }
 
-class _MapTabScreenState extends State<MapTabScreen> {
+class _LegacyMapTabScreenState extends State<LegacyMapTabScreen> {
   String _modeLabel(RideMode mode) {
     switch (mode) {
       case RideMode.duo:
@@ -557,7 +579,11 @@ class _MapTabScreenState extends State<MapTabScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.map_outlined, color: AppColors.themedGrey, size: 66),
+                    Icon(
+                      Icons.map_outlined,
+                      color: AppColors.themedGrey,
+                      size: 66,
+                    ),
                     SizedBox(height: 16),
                     Text(
                       'No active ride yet',
@@ -571,7 +597,10 @@ class _MapTabScreenState extends State<MapTabScreen> {
                     Text(
                       'Start a ride from the Home tab to see the map here.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.themedGrey, fontSize: 14),
+                      style: TextStyle(
+                        color: AppColors.themedGrey,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),

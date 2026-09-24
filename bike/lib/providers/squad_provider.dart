@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/rider_model.dart';
 import '../../models/ride_stats_model.dart';
 
@@ -7,6 +9,7 @@ class SquadProvider extends ChangeNotifier {
   RiderGroup? _activeGroup;
   List<RideRecord> _rideRecords = [];
   final Map<String, List<SquadChatMessage>> _chatMessagesByGroup = {};
+  static const _joinedMembersKey = 'persisted_squad_members';
 
   // Simulate current logged-in user as leader
   final String currentUserId = 'user_001';
@@ -18,6 +21,50 @@ class SquadProvider extends ChangeNotifier {
 
   SquadProvider() {
     _initDemo();
+    _loadPersistedMembers();
+  }
+
+  Future<void> _loadPersistedMembers() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_joinedMembersKey);
+    if (raw == null) return;
+    try {
+      final records = jsonDecode(raw) as List<dynamic>;
+      for (final record in records) {
+        final data = Map<String, dynamic>.from(record as Map);
+        final group = _getGroup(data['groupId'] as String);
+        if (group != null && !isMember(group.id, data['riderId'] as String)) {
+          group.members.add(
+            Rider(
+              id: data['riderId'] as String,
+              name: data['name'] as String,
+              role: RiderRole.midRider,
+            ),
+          );
+        }
+      }
+      notifyListeners();
+    } catch (_) {
+      // Ignore corrupted local membership data and keep the live squad intact.
+    }
+  }
+
+  Future<void> _persistJoinedMembers() async {
+    final records = _groups
+        .expand(
+          (group) => group.members
+              .where((member) => member.id != group.leaderId)
+              .map(
+                (member) => {
+                  'groupId': group.id,
+                  'riderId': member.id,
+                  'name': member.name,
+                },
+              ),
+        )
+        .toList();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_joinedMembersKey, jsonEncode(records));
   }
 
   void _initDemo() {
@@ -243,6 +290,32 @@ class SquadProvider extends ChangeNotifier {
     } catch (_) {
       return null;
     }
+  }
+
+  bool hasGroup(String groupId) => _getGroup(groupId) != null;
+
+  bool isMember(String groupId, String riderId) {
+    final group = _getGroup(groupId);
+    return group?.members.any((member) => member.id == riderId) ?? false;
+  }
+
+  bool joinGroup(
+    String groupId, {
+    required String riderId,
+    required String name,
+  }) {
+    final group = _getGroup(groupId);
+    if (group == null || isMember(groupId, riderId)) return false;
+    final maxAdditionalMembers = group.kind.maxAdditionalMembers;
+    if (maxAdditionalMembers != null &&
+        group.members.length - 1 >= maxAdditionalMembers) {
+      return false;
+    }
+    group.members.add(Rider(id: riderId, name: name, role: RiderRole.midRider));
+    _activeGroup = group;
+    notifyListeners();
+    _persistJoinedMembers();
+    return true;
   }
 
   /// RIDE STATISTICS FUNCTIONS
